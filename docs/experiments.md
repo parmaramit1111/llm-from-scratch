@@ -363,7 +363,7 @@ Multiple Layers
 
 # Experiment 03 — Add Bias
 
-**Status:** Planned
+**Status:** In Progress
 
 ## Objective
 
@@ -394,12 +394,208 @@ bias ≈ 2
 
 ---
 
+## Training Data
+
+```text
+x    y
+---------
+1    5
+2    8
+3    11
+4    14
+5    17
+```
+
+---
+
+## Initial Parameters
+
+The model starts with incorrect parameters:
+
+```text
+weight = 0.5
+bias   = 0.0
+```
+
+The `bias` parameter defaults to `0.0` so the neuron remains backward compatible with the original linear model.
+
+---
+
 ## New Concepts
 
 - Bias
 - Multiple trainable parameters
-- Multiple gradients
-- Parameter updates
+- Weight gradient
+- Bias gradient
+- Multiple parameter updates
+
+---
+
+## Forward Pass
+
+The neuron now calculates:
+
+```text
+prediction = (weight × input) + bias
+```
+
+Example:
+
+```text
+weight = 3
+bias   = 2
+input  = 4
+
+prediction = (3 × 4) + 2
+           = 14
+```
+
+---
+
+## Backward Pass
+
+The neuron calculates separate gradients for both trainable parameters:
+
+```text
+Weight Gradient
+       ↓
+Weight Update
+
+Bias Gradient
+       ↓
+Bias Update
+```
+
+The gradients are:
+
+```text
+weight_gradient = output_gradient × input
+
+bias_gradient = output_gradient
+```
+
+---
+
+## Training Workflow
+
+```text
+Input
+  ↓
+Forward Pass
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Loss Gradient
+  ↓
+Neuron Backward
+  ├── Weight Gradient
+  └── Bias Gradient
+          ↓
+      Optimizer
+       ├── Weight
+       └── Bias
+          ↓
+Updated Parameters
+  ↓
+Repeat
+```
+
+---
+
+## Implementation
+
+Core implementation:
+
+```text
+src/llm_from_scratch/core/
+├── neuron.py
+├── loss.py
+├── optimizer.py
+└── training.py
+```
+
+The neuron now supports:
+
+```text
+weight
+bias
+weight gradient
+bias gradient
+```
+
+The training step updates both `weight` and `bias`.
+
+---
+
+## Tests
+
+The neuron tests verify:
+
+```text
+Forward pass with bias
+Weight gradient
+Bias gradient
+```
+
+The training tests verify:
+
+```text
+Weight is updated
+Bias is updated
+```
+
+Current test suite:
+
+```text
+10 tests passed
+```
+
+---
+
+## Experiment
+
+```text
+experiments/
+└── 03_bias_learning.py
+```
+
+The experiment will train the neuron on:
+
+```text
+y = 3x + 2
+```
+
+and measure whether it can discover:
+
+```text
+weight ≈ 3
+bias   ≈ 2
+```
+
+---
+
+## Results
+
+**Pending experiment execution.**
+
+Record after training:
+
+```text
+Initial weight:
+Initial bias:
+
+Final weight:
+Final bias:
+
+Initial loss:
+Final loss:
+
+Epochs:
+Learning rate:
+Training time:
+```
 
 ---
 
@@ -409,6 +605,38 @@ bias ≈ 2
 - How does bias change what a neuron can represent?
 - Can both parameters converge?
 - How does the gradient differ for weight and bias?
+- Does adding bias allow the model to represent relationships that the original neuron could not?
+
+---
+
+## What We Learned
+
+The neuron now has more than one trainable parameter.
+
+Instead of learning only:
+
+```text
+weight
+```
+
+it can learn:
+
+```text
+weight
+bias
+```
+
+The optimizer itself does not need to know what a parameter represents. It simply receives:
+
+```text
+parameter
+gradient
+learning rate
+```
+
+and returns an updated parameter.
+
+This allows the same optimizer to update both weight and bias.
 
 ---
 
@@ -518,7 +746,7 @@ Neuron Gradient
   ↓
 Optimizer
   ↓
-Updated Parameter
+Updated Parameters
 ```
 
 The experiment-level loop repeats this process over:
@@ -1244,6 +1472,12 @@ Completed:
 06 — Training Loop               ✅
 ```
 
+In Progress:
+
+```text
+03 — Add Bias                    🔄
+```
+
 The current implementation has successfully demonstrated:
 
 ```text
@@ -1264,36 +1498,47 @@ Parameter Update
 Training Loop
 ```
 
+The neuron now supports:
+
+```text
+Weight
+Bias
+Weight Gradient
+Bias Gradient
+```
+
+The training step updates both trainable parameters.
+
 ---
 
 # Immediate Next Step
 
-The next experiment is:
+Complete:
 
 ```text
 03 — Add Bias
 ```
 
-We will extend:
+Create:
 
 ```text
-prediction = weight × input
+experiments/03_bias_learning.py
 ```
 
-to:
+Train the model on:
 
 ```text
-prediction = weight × input + bias
+y = 3x + 2
 ```
 
-The model will now need to learn two parameters instead of one:
+and verify whether it can discover:
 
 ```text
-weight
-bias
+weight ≈ 3
+bias   ≈ 2
 ```
 
-This will be our next step toward a more expressive neural network.
+After the experiment is executed, record the actual training results in this document.
 
 ---
 

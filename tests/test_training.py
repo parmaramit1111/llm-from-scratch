@@ -52,3 +52,28 @@ def test_training_step_reduces_loss():
     )
 
     assert updated_loss < initial_loss
+
+
+def test_training_step_updates_weight_and_bias():
+    """A training step should update both weight and bias."""
+
+    neuron = Neuron(weight=1.0, bias=0.0)
+    loss_function = MeanSquaredError()
+    optimizer = GradientDescent(learning_rate=0.01)
+
+    trainer = Trainer(
+        neuron=neuron,
+        loss_function=loss_function,
+        optimizer=optimizer,
+    )
+
+    initial_weight = neuron.weight
+    initial_bias = neuron.bias
+
+    trainer.train_step(
+        input_value=2.0,
+        target=8.0,
+    )
+
+    assert neuron.weight != initial_weight
+    assert neuron.bias != initial_bias
