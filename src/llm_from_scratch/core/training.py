@@ -57,10 +57,15 @@ class Trainer:
         # 4. Propagate gradient back to the neuron
         self.neuron.backward(loss_gradient)
 
-        # 5. Update the neuron's weight
+        # 5. Update the neuron's parameters
         self.neuron.weight = self.optimizer.step(
             parameter=self.neuron.weight,
             gradient=self.neuron.gradient,
+        )
+
+        self.neuron.bias = self.optimizer.step(
+            parameter=self.neuron.bias,
+            gradient=self.neuron.bias_gradient,
         )
 
         return loss

@@ -1,42 +1,41 @@
 """
 Concept: Neuron
 
-A neuron is a small mathematical unit that takes an input,
-applies a weight, and produces an output.
-
-General form:
+A neuron takes an input, applies a weight, and adds a bias.
 
     output = (weight × input) + bias
 
-For our first experiment, we intentionally keep it simple
-and do not use bias yet:
+Weight controls how strongly the input affects the output.
 
-    output = weight × input
+Bias shifts the output up or down independently of the input.
 
-The weight is the parameter that our model will eventually
-learn during training.
+Both weight and bias are trainable parameters.
 """
 
 
 class Neuron:
-    """A simple trainable neuron."""
+    """A simple trainable neuron with weight and bias."""
 
-    def __init__(self, weight: float):
+    def __init__(self, weight: float, bias: float = 0.0):
         self.weight = weight
+        self.bias = bias
         self.gradient = 0.0
+        self.bias_gradient = 0.0
         self._input = 0.0
 
     def forward(self, input_value: float) -> float:
-        """Calculate the output for a given input."""
+        """Calculate the neuron output."""
         self._input = input_value
-        return self.weight * input_value
+        return self.weight * input_value + self.bias
 
     def backward(self, output_gradient: float) -> float:
         """
-        Calculate the gradient for the neuron's weight.
+        Calculate gradients for weight and bias.
 
-        The output gradient represents how the loss changes
-        with respect to the neuron's output.
+        Returns:
+            The gradient for the weight.
         """
         self.gradient = output_gradient * self._input
+        self.bias_gradient = output_gradient
+
         return self.gradient

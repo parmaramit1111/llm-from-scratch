@@ -1,9 +1,9 @@
 """
 Concept: Optimizer
 
-An optimizer updates the parameters of a model using gradients.
+An optimizer updates model parameters using gradients.
 
-For our first experiment, we use Gradient Descent:
+For Gradient Descent:
 
     new_parameter = old_parameter - learning_rate × gradient
 
