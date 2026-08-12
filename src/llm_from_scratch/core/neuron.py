@@ -30,12 +30,14 @@ class Neuron:
 
     def backward(self, output_gradient: float) -> float:
         """
-        Calculate gradients for weight and bias.
+        Calculate gradients for weight, bias, and input.
 
         Returns:
-            The gradient for the weight.
+            The gradient with respect to the input.
         """
         self.gradient = output_gradient * self._input
         self.bias_gradient = output_gradient
 
-        return self.gradient
+        input_gradient = output_gradient * self.weight
+
+        return input_gradient
