@@ -6,6 +6,8 @@ The test verifies:
     loss = (prediction - target)²
 """
 
+import pytest
+
 from llm_from_scratch.core.loss import MeanSquaredError
 
 
@@ -14,8 +16,8 @@ def test_mean_squared_error():
     loss_function = MeanSquaredError()
 
     result = loss_function.forward(
-        prediction=5.0,
-        target=6.0,
+        predictions=[5.0],
+        targets=[6.0],
     )
 
     assert result == 1.0
@@ -26,19 +28,44 @@ def test_mean_squared_error_for_correct_prediction():
     loss_function = MeanSquaredError()
 
     result = loss_function.forward(
-        prediction=6.0,
-        target=6.0,
+        predictions=[6.0],
+        targets=[6.0],
     )
 
     assert result == 0.0
 
-def test_mean_squared_error_backward():
-    """MSE backward should calculate the loss gradient correctly."""
-    loss_function = MeanSquaredError()
+def test_mean_squared_error_forward():
+    """MSE should return the average squared error."""
+    loss = MeanSquaredError()
 
-    gradient = loss_function.backward(
-        prediction=6.0,
-        target=9.0,
+    result = loss.forward(
+        predictions=[9.0, 12.0, 4.0],
+        targets=[10.0, 10.0, 3.0],
     )
 
-    assert gradient == -6.0
+    assert result == 2.0
+
+def test_mean_squared_error_backward():
+    """MSE should calculate a gradient for each prediction."""
+    loss = MeanSquaredError()
+
+    gradients = loss.backward(
+        predictions=[9.0, 12.0, 4.0],
+        targets=[10.0, 10.0, 3.0],
+    )
+
+    assert gradients == [
+        -2.0 / 3.0,
+        4.0 / 3.0,
+        2.0 / 3.0,
+    ]
+
+def test_mean_squared_error_requires_matching_lengths():
+    """MSE should reject predictions and targets of different lengths."""
+    loss = MeanSquaredError()
+
+    with pytest.raises(ValueError):
+        loss.forward(
+            predictions=[9.0, 12.0, 4.0],
+            targets=[10.0, 10.0],
+        )
