@@ -10,27 +10,27 @@ to reduce its prediction error.
 """
 
 from llm_from_scratch.core.loss import MeanSquaredError
-from llm_from_scratch.core.neuron import Neuron
+from llm_from_scratch.core.layer import Layer
 from llm_from_scratch.core.optimizer import GradientDescent
 
 
 class Trainer:
-    """Train a neuron using loss, gradients, and an optimizer."""
+    """Train a layer using loss, gradients, and an optimizer."""
 
     def __init__(
         self,
-        neuron: Neuron,
+        layer: Layer,
         loss_function: MeanSquaredError,
         optimizer: GradientDescent,
     ):
-        self.neuron = neuron
+        self.layer = layer
         self.loss_function = loss_function
         self.optimizer = optimizer
 
     def train_step(
         self,
         input_value: float,
-        target: float,
+        targets: list[float],
     ) -> float:
         """
         Perform one complete training step.
@@ -40,32 +40,33 @@ class Trainer:
         """
 
         # 1. Forward pass
-        prediction = self.neuron.forward(input_value)
+        predictions = self.layer.forward(input_value)
 
         # 2. Calculate loss
         loss = self.loss_function.forward(
-            prediction=prediction,
-            target=target,
+            predictions=predictions,
+            targets=targets,
         )
 
         # 3. Calculate gradient of the loss
-        loss_gradient = self.loss_function.backward(
-            prediction=prediction,
-            target=target,
+        loss_gradients = self.loss_function.backward(
+            predictions=predictions,
+            targets=targets,
         )
 
-        # 4. Propagate gradient back to the neuron
-        self.neuron.backward(loss_gradient)
+        # 4. Propagate gradients back through the layer
+        self.layer.backward(loss_gradients)
 
-        # 5. Update the neuron's parameters
-        self.neuron.weight = self.optimizer.step(
-            parameter=self.neuron.weight,
-            gradient=self.neuron.gradient,
-        )
+        # 5. Update each neuron's parameters
+        for neuron in self.layer.neurons:
+            neuron.weight = self.optimizer.step(
+                parameter=neuron.weight,
+                gradient=neuron.gradient,
+            )
 
-        self.neuron.bias = self.optimizer.step(
-            parameter=self.neuron.bias,
-            gradient=self.neuron.bias_gradient,
-        )
+            neuron.bias = self.optimizer.step(
+                parameter=neuron.bias,
+                gradient=neuron.bias_gradient,
+            )
 
         return loss
