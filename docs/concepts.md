@@ -1,14 +1,17 @@
-# LLM From Scratch — Concepts
+# LLM From Scratch --- Concepts
 
-This document is a living reference for the core concepts used throughout the project.
+This document is a living reference for the core concepts used
+throughout the project.
 
-The goal is to understand **what each concept means, why it exists, and how it contributes to an LLM**.
+The goal is to understand **what each concept means, why it exists, and
+how it contributes to an LLM**.
 
 ---
 
 # 1. Machine Learning
 
-Machine learning is the process of allowing a system to learn patterns from examples rather than explicitly programming every rule.
+Machine learning is the process of allowing a system to learn patterns
+from examples rather than explicitly programming every rule.
 
 Traditional programming:
 
@@ -28,13 +31,15 @@ Input + Expected Output
      New Prediction
 ```
 
-In this project, the model will start with random parameters and learn them through training.
+In this project, the model will start with random parameters and learn
+them through training.
 
 ---
 
 # 2. Model
 
-A model is a mathematical function with parameters that can be adjusted during training.
+A model is a mathematical function with parameters that can be adjusted
+during training.
 
 Conceptually:
 
@@ -125,7 +130,8 @@ During training, weights are adjusted to reduce prediction error.
 
 # 5. Bias
 
-A bias is an additional learned value that allows a model to shift its output.
+A bias is an additional learned value that allows a model to shift its
+output.
 
 Example:
 
@@ -145,7 +151,8 @@ y = 3x + 2
 
 # 6. Neuron
 
-A neuron is a small mathematical unit that combines inputs, weights, and a bias.
+A neuron is a small mathematical unit that combines inputs, weights, and
+a bias.
 
 Conceptually:
 
@@ -169,13 +176,15 @@ A simple neuron:
 z = w × x + b
 ```
 
-The neuron is one of the fundamental building blocks of a neural network.
+The neuron is one of the fundamental building blocks of a neural
+network.
 
 ---
 
 # 7. Forward Pass
 
-The forward pass is the process of sending input through the model to produce a prediction.
+The forward pass is the process of sending input through the model to
+produce a prediction.
 
 ```text
 Input
@@ -217,7 +226,8 @@ Expected: 6
 Predicted: 5.5
 ```
 
-The difference between the prediction and expected result is used to calculate the loss.
+The difference between the prediction and expected result is used to
+calculate the loss.
 
 ---
 
@@ -244,13 +254,15 @@ Predicted = 5.5
 
 The loss function converts this error into a numerical value.
 
-Lower loss generally means the model is performing better on the training examples.
+Lower loss generally means the model is performing better on the
+training examples.
 
 ---
 
 # 10. Mean Squared Error
 
-Mean Squared Error (MSE) is a simple loss function useful for our first experiments.
+Mean Squared Error (MSE) is a simple loss function useful for our first
+experiments.
 
 For one example:
 
@@ -264,15 +276,18 @@ For multiple examples:
 MSE = average((prediction - target)²)
 ```
 
-We will use MSE initially because it makes the mathematics easy to understand.
+We will use MSE initially because it makes the mathematics easy to
+understand.
 
-Later, language models will use different loss functions, typically based on cross-entropy.
+Later, language models will use different loss functions, typically
+based on cross-entropy.
 
 ---
 
 # 11. Derivative
 
-A derivative tells us how much a value changes when another value changes.
+A derivative tells us how much a value changes when another value
+changes.
 
 For machine learning, derivatives help answer:
 
@@ -297,7 +312,8 @@ Derivatives are fundamental to backpropagation.
 
 # 12. Gradient
 
-A gradient is a collection of derivatives describing how the loss changes with respect to model parameters.
+A gradient is a collection of derivatives describing how the loss
+changes with respect to model parameters.
 
 For example:
 
@@ -316,7 +332,8 @@ The gradient tells the optimizer how the parameters should change.
 
 # 13. Backpropagation
 
-Backpropagation calculates how much each model parameter contributed to the final error.
+Backpropagation calculates how much each model parameter contributed to
+the final error.
 
 The general process is:
 
@@ -334,7 +351,8 @@ Gradients
 
 The gradients are then used to update the model parameters.
 
-Backpropagation is one of the most important concepts we will implement ourselves.
+Backpropagation is one of the most important concepts we will implement
+ourselves.
 
 ---
 
@@ -401,7 +419,8 @@ The correct value depends on the model and training problem.
 
 # 16. Training
 
-Training is the process of repeatedly showing examples to the model and updating its parameters.
+Training is the process of repeatedly showing examples to the model and
+updating its parameters.
 
 Basic workflow:
 
@@ -493,7 +512,8 @@ Batch
 [Example 1, Example 2, Example 3, ...]
 ```
 
-Batches become particularly important when training large models on GPUs.
+Batches become particularly important when training large models on
+GPUs.
 
 ---
 
@@ -501,7 +521,8 @@ Batches become particularly important when training large models on GPUs.
 
 An activation function introduces non-linearity into a neural network.
 
-Without non-linear activation functions, stacking many linear layers would still behave essentially like one linear transformation.
+Without non-linear activation functions, stacking many linear layers
+would still behave essentially like one linear transformation.
 
 Common activation functions:
 
@@ -518,7 +539,8 @@ We will initially implement ReLU.
 
 # 21. Neural Network
 
-A neural network is a collection of interconnected neurons organized into layers.
+A neural network is a collection of interconnected neurons organized
+into layers.
 
 Example:
 
@@ -570,7 +592,8 @@ Higher-dimensional tensor
 
 Modern deep-learning frameworks represent most model data using tensors.
 
-Initially, we will use normal Python data structures to understand the mathematics.
+Initially, we will use normal Python data structures to understand the
+mathematics.
 
 Later we will introduce NumPy and PyTorch tensors.
 
@@ -578,7 +601,8 @@ Later we will introduce NumPy and PyTorch tensors.
 
 # 23. Matrix Multiplication
 
-Matrix multiplication is one of the most important operations in neural networks.
+Matrix multiplication is one of the most important operations in neural
+networks.
 
 Conceptually:
 
@@ -616,7 +640,8 @@ Example:
 "learning"
 ```
 
-might be represented as one token or several smaller tokens depending on the tokenizer.
+might be represented as one token or several smaller tokens depending on
+the tokenizer.
 
 ---
 
@@ -689,13 +714,15 @@ Example:
 
 The embedding values are learned during training.
 
-Embeddings allow the model to represent relationships between tokens numerically.
+Embeddings allow the model to represent relationships between tokens
+numerically.
 
 ---
 
 # 28. Positional Information
 
-Transformers process tokens in parallel, so they need a way to represent token position.
+Transformers process tokens in parallel, so they need a way to represent
+token position.
 
 For example:
 
@@ -709,13 +736,15 @@ has a different meaning/order from:
 The cat chased the dog
 ```
 
-The model therefore needs positional information in addition to token embeddings.
+The model therefore needs positional information in addition to token
+embeddings.
 
 ---
 
 # 29. Attention
 
-Attention allows a model to determine which parts of the input are important when processing a particular token.
+Attention allows a model to determine which parts of the input are
+important when processing a particular token.
 
 Conceptually:
 
@@ -735,7 +764,8 @@ For example:
 The pharmacy filled the prescription because it had the drug.
 ```
 
-Attention helps the model determine what words are relevant to understanding "it".
+Attention helps the model determine what words are relevant to
+understanding "it".
 
 ---
 
@@ -761,13 +791,15 @@ Weighted Values
 Context
 ```
 
-This mechanism allows each token to gather information from other tokens.
+This mechanism allows each token to gather information from other
+tokens.
 
 ---
 
 # 31. Self-Attention
 
-Self-attention means tokens attend to other tokens within the same sequence.
+Self-attention means tokens attend to other tokens within the same
+sequence.
 
 Conceptually:
 
@@ -784,7 +816,8 @@ The result is a context-aware representation of the sequence.
 
 # 32. Multi-Head Attention
 
-Instead of performing one attention calculation, a Transformer can perform several attention operations in parallel.
+Instead of performing one attention calculation, a Transformer can
+perform several attention operations in parallel.
 
 ```text
 Input
@@ -803,7 +836,8 @@ Different heads can learn different relationships.
 
 # 33. Transformer
 
-A Transformer is a neural-network architecture built around attention mechanisms.
+A Transformer is a neural-network architecture built around attention
+mechanisms.
 
 A simplified Transformer block contains:
 
@@ -831,7 +865,8 @@ Transformers are the core architecture behind most modern LLMs.
 
 # 34. Logits
 
-Logits are the raw numerical outputs produced by the final model layer before converting them into probabilities.
+Logits are the raw numerical outputs produced by the final model layer
+before converting them into probabilities.
 
 Example:
 
@@ -881,7 +916,8 @@ The model can then select or sample the next token.
 
 # 36. Next-Token Prediction
 
-A language model learns to predict the next token based on previous tokens.
+A language model learns to predict the next token based on previous
+tokens.
 
 Example:
 
@@ -911,13 +947,15 @@ Loss
 Backpropagation
 ```
 
-This simple objective is the foundation of autoregressive language models.
+This simple objective is the foundation of autoregressive language
+models.
 
 ---
 
 # 37. Language Model
 
-A language model estimates the probability of tokens given previous context.
+A language model estimates the probability of tokens given previous
+context.
 
 Conceptually:
 
@@ -964,9 +1002,11 @@ Model D
 1,000,000,000 parameters
 ```
 
-More parameters generally provide greater capacity, but parameter count alone does not determine model quality.
+More parameters generally provide greater capacity, but parameter count
+alone does not determine model quality.
 
-Training data, architecture, optimization, and training quality also matter.
+Training data, architecture, optimization, and training quality also
+matter.
 
 ---
 
@@ -1020,7 +1060,8 @@ Parameter updates
 
 ### Fine-Tuning
 
-Start with an existing pretrained model and continue training it on a specialized dataset.
+Start with an existing pretrained model and continue training it on a
+specialized dataset.
 
 ```text
 Pretrained Model
@@ -1032,7 +1073,8 @@ Fine-Tuned Model
 
 ### Retrieval-Augmented Generation (RAG)
 
-Keep knowledge outside the model and retrieve relevant information at runtime.
+Keep knowledge outside the model and retrieve relevant information at
+runtime.
 
 ```text
 Question
@@ -1044,7 +1086,8 @@ Model
 Answer
 ```
 
-For many real-world applications, RAG is preferable to retraining the model.
+For many real-world applications, RAG is preferable to retraining the
+model.
 
 ---
 
@@ -1179,7 +1222,8 @@ That is the core journey of this project.
 
 ## Status
 
-Concepts will be expanded as the corresponding implementations are developed.
+Concepts will be expanded as the corresponding implementations are
+developed.
 
 Current focus:
 
@@ -1196,3 +1240,452 @@ Backpropagation
   ↓
 Gradient Descent
 ```
+
+---
+
+# 44. Major Learning, Exceptions, and Quick Review
+
+This section is a compact reference for the most important lessons
+established so far.
+
+## Major Learning
+
+### Model
+
+A model is a parameterized mathematical function that learns
+relationships from examples.
+
+### Parameter
+
+Weights and biases are learned parameters. Later, embeddings and
+attention-related values will also be trainable parameters.
+
+### Neuron
+
+A neuron performs a weighted combination of inputs, adds a bias, and
+applies an activation function.
+
+```text
+weighted sum + bias
+        ↓
+    activation
+        ↓
+      output
+```
+
+### Layer
+
+A layer groups neurons that operate on the same input vector.
+
+```text
+Input Vector
+     ↓
+ ┌───┼───┐
+ N1  N2  N3
+ └───┼───┘
+     ↓
+ Outputs
+```
+
+### Network
+
+A network combines layers sequentially.
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+Layer 2
+  ↓
+Output
+```
+
+### Loss
+
+Loss measures how far the prediction is from the target.
+
+### Gradient
+
+A gradient tells us how the loss changes with respect to a parameter.
+
+### Backpropagation
+
+Backpropagation calculates gradients by propagating the error backward
+through the computation.
+
+```text
+Output
+  ↓
+Layer 2
+  ↓
+Layer 1
+  ↓
+Input
+```
+
+### Optimizer
+
+The optimizer uses gradients to update parameters.
+
+```text
+new parameter =
+    old parameter - learning rate × gradient
+```
+
+### Trainer
+
+The Trainer coordinates the complete learning cycle without duplicating
+the mathematics owned by the individual components.
+
+```text
+Forward
+  ↓
+Loss
+  ↓
+Backward
+  ↓
+Update
+```
+
+---
+
+## Important Exceptions and Limitations
+
+### 1. More epochs do not fix an insufficient architecture
+
+If the model cannot represent the target relationship, training longer
+does not solve the underlying problem.
+
+### 2. More neurons do not automatically mean a deeper network
+
+Multiple neurons in one layer increase width.
+
+Multiple sequential layers increase depth.
+
+```text
+Width:
+N1  N2  N3
+
+Depth:
+Layer 1
+   ↓
+Layer 2
+```
+
+### 3. Linear layers alone remain linear
+
+Stacking linear transformations without a non-linear activation does not
+give the network the expressive power normally associated with deep
+neural networks.
+
+### 4. ReLU can block gradients
+
+For our ReLU implementation:
+
+```text
+raw input > 0 → gradient passes
+raw input ≤ 0 → gradient = 0
+```
+
+This behavior is intentional and is part of the activation's backward
+pass.
+
+### 5. Input and weight dimensions must agree
+
+For a multi-input neuron:
+
+```text
+number of inputs = number of weights
+```
+
+A mismatch should be rejected rather than silently producing an
+incorrect result.
+
+### 6. Backpropagation order matters
+
+If forward propagation is:
+
+```text
+Layer 1 → Layer 2
+```
+
+backpropagation must be:
+
+```text
+Layer 2 → Layer 1
+```
+
+### 7. Low training loss is not enough
+
+A model can achieve low training loss while still failing to generalize
+to unseen data.
+
+This becomes important when we study validation data and overfitting.
+
+### 8. Parameter count is not model quality
+
+A larger number of parameters gives a model more capacity, but
+architecture, data, optimization, and training quality also matter.
+
+### 9. Training and inference are different
+
+Training changes parameters.
+
+Inference normally does not.
+
+```text
+Training:
+Input → Prediction → Loss → Backward → Update
+
+Inference:
+Input → Prediction
+```
+
+---
+
+# 45. Short Concept Summary
+
+The concepts learned so far can be reduced to this progression:
+
+```text
+Input
+  ↓
+Neuron
+  ↓
+Layer
+  ↓
+Network
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Gradient
+  ↓
+Backpropagation
+  ↓
+Optimizer
+  ↓
+Updated Parameters
+```
+
+The architecture then grows toward language:
+
+```text
+Numeric Learning
+      ↓
+Character Prediction
+      ↓
+Tokenization
+      ↓
+Embeddings
+      ↓
+Attention
+      ↓
+Transformer
+      ↓
+Tiny Language Model
+```
+
+## One-Line Definitions
+
+```text
+Neuron
+→ Performs a parameterized calculation.
+
+Layer
+→ Groups neurons operating on the same input vector.
+
+Network
+→ Connects layers sequentially.
+
+Activation
+→ Introduces non-linearity and controls gradient flow.
+
+Loss
+→ Measures prediction error.
+
+Gradient
+→ Measures how the loss changes with respect to parameters.
+
+Backpropagation
+→ Calculates gradients through the computation graph.
+
+Optimizer
+→ Uses gradients to update parameters.
+
+Trainer
+→ Coordinates the learning process.
+
+Token
+→ A unit of text processed by a language model.
+
+Embedding
+→ A learned vector representation of a token.
+
+Attention
+→ Allows representations to incorporate information from other positions.
+
+Transformer
+→ Combines attention and feed-forward processing into a scalable architecture.
+```
+
+---
+
+# 46. Current Implementation Context
+
+The concepts are being learned alongside a first-principles
+implementation.
+
+Current verified architecture:
+
+```text
+Input Vector
+      ↓
+Network
+      ↓
+Layer 1
+      ↓
+Neuron(s)
+      ↓
+Weighted Sum + Bias
+      ↓
+Activation
+      ↓
+Layer 2
+      ↓
+...
+      ↓
+Prediction
+      ↓
+Loss
+      ↓
+Backpropagation
+      ↓
+Gradient Descent
+      ↓
+Updated Parameters
+```
+
+The current implementation has already moved beyond the original
+single-neuron model and supports:
+
+```text
+Multiple inputs
+Multiple neurons
+Multiple layers
+ReLU activation
+Forward propagation
+Backward propagation
+Gradient aggregation
+Network-based training
+Weight updates
+Bias updates
+```
+
+The complete automated test suite currently contains:
+
+```text
+28 passed
+```
+
+## Current Focus
+
+The immediate learning focus is:
+
+```text
+Multi-Layer Training
+```
+
+After that, the project will transition from numerical learning into
+language-model concepts:
+
+```text
+Character Prediction
+        ↓
+Tokenizer
+        ↓
+Embeddings
+        ↓
+Self-Attention
+        ↓
+Multi-Head Attention
+        ↓
+Transformer Block
+        ↓
+Tiny Transformer
+        ↓
+Tiny LLM
+```
+
+---
+
+# 47. Learning Principle
+
+For every new concept, ask three questions:
+
+### What is it?
+
+Understand the definition and mathematics.
+
+### Why do we need it?
+
+Understand the limitation or problem that caused the abstraction to be
+introduced.
+
+### What does it change?
+
+Understand how it affects the model's behavior and training.
+
+For example:
+
+```text
+Activation
+
+What?
+→ Non-linear transformation.
+
+Why?
+→ Linear layers alone cannot represent complex non-linear relationships.
+
+What changes?
+→ The network can learn non-linear patterns and gradients are affected by the activation.
+```
+
+This principle should remain the foundation of the project.
+
+---
+
+# 48. Current Milestone
+
+We have moved through:
+
+```text
+Linear Model
+      ↓
+Bias
+      ↓
+Multiple Inputs
+      ↓
+Multiple Neurons
+      ↓
+Activation
+      ↓
+Layer
+      ↓
+Multiple Layers
+      ↓
+Network
+      ↓
+Backpropagation
+      ↓
+Network-Based Training
+```
+
+The next milestone is to demonstrate that the complete system can
+**learn through multiple layers**, not merely execute forward and
+backward calculations.
+
+> **The goal is not just to make the code work. The goal is to
+> understand why every abstraction exists and what problem it solves.**
