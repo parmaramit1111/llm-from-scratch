@@ -50,3 +50,46 @@ def test_neuron_backward_with_bias():
     assert neuron.gradient == -8.0
     assert neuron.bias_gradient == -2.0
     assert input_gradient == -6.0
+
+
+def test_neuron_positive_backward():
+    """A neuron should pass gradients when its raw output is positive."""
+    neuron = Neuron(weight=2.0, bias=0.0)
+
+    neuron.forward(3.0)
+
+    input_gradient = neuron.backward(
+        output_gradient=-6.0,
+    )
+
+    assert neuron.gradient == -18.0
+    assert neuron.bias_gradient == -6.0
+    assert input_gradient == -12.0
+
+def test_neuron_negative_backward():
+    """A neuron should block gradients when its raw output is negative."""
+    neuron = Neuron(weight=2.0, bias=0.0)
+
+    neuron.forward(-3.0)
+
+    input_gradient = neuron.backward(
+        output_gradient=-6.0,
+    )
+
+    assert neuron.gradient == 0.0
+    assert neuron.bias_gradient == 0.0
+    assert input_gradient == 0.0
+
+def test_neuron_zero_backward():
+    """A neuron should block gradients when its raw output is zero."""
+    neuron = Neuron(weight=2.0, bias=0.0)
+
+    neuron.forward(0.0)
+
+    input_gradient = neuron.backward(
+        output_gradient=3.0,
+    )
+
+    assert neuron.gradient == 0.0
+    assert neuron.bias_gradient == 0.0
+    assert input_gradient == 0.0

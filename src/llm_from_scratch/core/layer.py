@@ -3,7 +3,10 @@ Concept: Layer
 
 A layer is a collection of neurons that process the same input.
 
-Each neuron has its own weight and bias.
+Each neuron has its own weight, bias, and activation function.
+
+The layer coordinates the neurons but does not perform the
+neuron's mathematical calculation or activation itself.
 
 Example:
 
@@ -13,7 +16,17 @@ Example:
     ↓   ↓   ↓
    N1  N2  N3
     ↓   ↓   ↓
+  Act  Act  Act
+    ↓   ↓   ↓
    O1  O2  O3
+
+Forward:
+    Input → Neuron → Activation → Output
+
+Backward:
+    Output gradients
+          ↓
+    Neuron → Activation → Input gradients
 """
 
 
