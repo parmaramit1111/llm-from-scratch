@@ -10,26 +10,26 @@ to reduce its prediction error.
 """
 
 from llm_from_scratch.core.loss import MeanSquaredError
-from llm_from_scratch.core.layer import Layer
+from llm_from_scratch.core.network import Network
 from llm_from_scratch.core.optimizer import GradientDescent
 
 
 class Trainer:
-    """Train a layer using loss, gradients, and an optimizer."""
+    """Train a network using loss, gradients, and an optimizer."""
 
     def __init__(
         self,
-        layer: Layer,
+        network: Network,
         loss_function: MeanSquaredError,
         optimizer: GradientDescent,
     ):
-        self.layer = layer
+        self.network = network
         self.loss_function = loss_function
         self.optimizer = optimizer
 
     def train_step(
         self,
-        input_value: float,
+        input_values: list[float],
         targets: list[float],
     ) -> float:
         """
@@ -39,8 +39,8 @@ class Trainer:
             The loss calculated for this step.
         """
 
-        # 1. Forward pass
-        predictions = self.layer.forward(input_value)
+        # 1. Forward pass through the network
+        predictions = self.network.forward(input_values)
 
         # 2. Calculate loss
         loss = self.loss_function.forward(
@@ -54,19 +54,24 @@ class Trainer:
             targets=targets,
         )
 
-        # 4. Propagate gradients back through the layer
-        self.layer.backward(loss_gradients)
+        # 4. Propagate gradients backward through the network
+        self.network.backward(loss_gradients)
 
-        # 5. Update each neuron's parameters
-        for neuron in self.layer.neurons:
-            neuron.weight = self.optimizer.step(
-                parameter=neuron.weight,
-                gradient=neuron.gradient,
-            )
+        # 5. Update every neuron's parameters
+        for layer in self.network.layers:
+            for neuron in layer.neurons:
+                neuron.weights = [
+                    self.optimizer.step(weight, gradient)
+                    for weight, gradient in zip(
+                        neuron.weights,
+                        neuron.gradient,
+                        strict=True,
+                    )
+                ]
 
-            neuron.bias = self.optimizer.step(
-                parameter=neuron.bias,
-                gradient=neuron.bias_gradient,
-            )
+                neuron.bias = self.optimizer.step(
+                    parameter=neuron.bias,
+                    gradient=neuron.bias_gradient,
+                )
 
         return loss

@@ -1,58 +1,89 @@
 """
 Concept: Neuron
 
-A neuron takes an input, applies a weight, and adds a bias.
+A neuron receives multiple input values, applies a corresponding
+weight to each input, adds a bias, and passes the result through
+an activation function.
 
-    output = (weight × input) + bias
+The raw output is calculated as:
 
-Weight controls how strongly the input affects the output.
+    raw_output = sum(weight × input) + bias
 
-Bias shifts the output up or down independently of the input.
+For example:
 
-Both weight and bias are trainable parameters.
+    inputs  = [x1, x2]
+    weights = [w1, w2]
+
+    raw_output = (w1 × x1) + (w2 × x2) + bias
+
+The activation function then transforms the raw output:
+
+    output = activation(raw_output)
+
+During backpropagation, the neuron calculates:
+
+    weight gradients
+    bias gradient
+    input gradients
+
+Each input has its own weight and corresponding weight gradient.
 """
 
 from .activation import Activation
 
 
 class Neuron:
-    """A simple trainable neuron with weight and bias."""
+    """A trainable neuron with multiple inputs, weights, bias, and activation."""
 
     def __init__(
         self,
-        weight: float,
+        weights: list[float],
         bias: float = 0.0,
         activation: Activation | None = None,
     ):
-        self.weight = weight
+        self.weights = weights
         self.bias = bias
-        self.gradient = 0.0
+        self.gradient = [0.0] * len(weights)
         self.bias_gradient = 0.0
-        self._input = 0.0
+        self._input = [0.0] * len(weights)
         self.activation = activation or Activation()
 
-
-    def forward(self, input_value: float) -> float:
+    def forward(self, input_values: list[float]) -> float:
         """Calculate the neuron output."""
-        self._input = input_value
+        self._input = input_values
 
-        raw_output = self.weight * input_value + self.bias
+        raw_output = sum(
+            weight * input_value
+            for weight, input_value in zip(
+                self.weights,
+                input_values,
+                strict=True,
+            )
+        ) + self.bias
 
         return self.activation.forward(raw_output)
 
-    def backward(self, output_gradient: float) -> float:
+    def backward(self, output_gradient: float) -> list[float]:
         """
-        Calculate gradients for weight, bias, and input.
+        Calculate gradients for weights, bias, and inputs.
 
         Returns:
-            The gradient with respect to the input.
+            The gradients with respect to the inputs.
         """
         activation_gradient = self.activation.backward(
             output_gradient
         )
-        self.gradient = activation_gradient * self._input
+
+        self.gradient = [
+            activation_gradient * input_value
+            for input_value in self._input
+        ]
+
         self.bias_gradient = activation_gradient
 
-        input_gradient = activation_gradient * self.weight
+        input_gradients = [
+            activation_gradient * weight
+            for weight in self.weights
+        ]
 
-        return input_gradient
+        return input_gradients
