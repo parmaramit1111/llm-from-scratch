@@ -1,17 +1,14 @@
 # LLM From Scratch — Experiments
 
-This document records the practical experiments performed during the development of the project.
+This document records the experiments used to understand and build the project from simple mathematical models toward a tiny language model.
 
-The purpose is not only to record successful results, but also to document:
+Each experiment focuses on:
 
-- What we tried
-- Why we tried it
+- What we are trying to learn
+- What we implemented
 - What happened
-- What failed
 - What we learned
-- What we will change next
-
-The experiments progressively move from simple mathematical models toward a tiny language model.
+- What comes next
 
 ---
 
@@ -21,10 +18,10 @@ The experiments progressively move from simple mathematical models toward a tiny
 
 ## Objective
 
-Build the smallest possible learning system and teach it to discover the relationship:
+Teach the smallest possible model to discover:
 
 ```text
-y = 3x
+y = 3 × x
 ```
 
 Training data:
@@ -39,36 +36,26 @@ x    y
 5    15
 ```
 
-The model starts with an incorrect weight rather than being given the value `3`.
-
----
-
 ## Model
 
 ```text
 prediction = weight × input
 ```
 
-Initial weight:
+Initial:
 
 ```text
 weight = 0.5
+learning rate = 0.01
+epochs = 100
 ```
 
-The model should gradually learn:
-
-```text
-weight ≈ 3
-```
-
----
-
-## Learning Workflow
+## Workflow
 
 ```text
 Input
   ↓
-Forward Pass
+Forward
   ↓
 Prediction
   ↓
@@ -85,51 +72,7 @@ Updated Weight
 Repeat
 ```
 
----
-
-## Implementation
-
-Core files:
-
-```text
-src/llm_from_scratch/core/
-├── neuron.py
-├── loss.py
-├── optimizer.py
-└── training.py
-```
-
-Tests:
-
-```text
-tests/
-├── test_neuron.py
-├── test_loss.py
-├── test_optimizer.py
-└── test_training.py
-```
-
-Experiment:
-
-```text
-experiments/
-└── 01_linear_learning.py
-```
-
----
-
-## Parameters
-
-```text
-Initial weight:    0.5
-Learning rate:     0.01
-Epochs:            100
-Training examples: 5
-```
-
----
-
-## Results
+## Result
 
 ```text
 Initial weight: 0.5000
@@ -137,54 +80,15 @@ Final weight:   3.000000
 Final loss:     0.000000
 ```
 
-Training output showed:
-
-```text
-Epoch   1 | Loss: 34.026687 | Weight: 2.371585
-Epoch  10 | Loss: 0.000000 | Weight: 2.999997
-Epoch 100 | Loss: 0.000000 | Weight: 3.000000
-```
-
----
-
-## Observations
-
-The model successfully discovered the relationship:
-
-```text
-y = 3x
-```
-
-without being explicitly given:
-
-```text
-weight = 3
-```
-
-The weight was updated through repeated:
-
-```text
-Prediction
-    ↓
-Loss
-    ↓
-Gradient
-    ↓
-Weight Update
-```
-
-The loss reached zero because the relationship can be represented exactly by our model.
-
----
+The model discovered the relationship without being given `weight = 3`.
 
 ## What We Learned
 
-- A neuron can make a prediction using a parameter.
-- Loss measures how wrong the prediction is.
-- A gradient tells us how the parameter should change.
-- Gradient descent updates the parameter.
-- Repeating this process is training.
-- A model can discover parameters instead of being directly given the correct values.
+- A model can learn parameters from examples.
+- Loss measures prediction error.
+- Gradients indicate how parameters should change.
+- Gradient descent updates parameters.
+- Repeating the cycle is training.
 
 ---
 
@@ -194,7 +98,7 @@ The loss reached zero because the relationship can be represented exactly by our
 
 ## Objective
 
-Observe what happens when a simple linear model is given training data that cannot be represented by a single weight.
+Show what happens when a model is too simple for the data.
 
 Training data:
 
@@ -212,49 +116,13 @@ x    y
 9    15
 ```
 
-The first five examples follow:
-
-```text
-y = 3x
-```
-
-After `x = 5`, the target becomes constant:
-
-```text
-y = 15
-```
-
----
-
-## Model
-
 The model remains:
 
 ```text
 prediction = weight × input
 ```
 
-It still has only one trainable parameter:
-
-```text
-weight
-```
-
----
-
-## Experiment
-
-The model starts with:
-
-```text
-weight = 0.5
-```
-
-and attempts to minimize the total loss across all training examples.
-
----
-
-## Results
+## Result
 
 ```text
 Initial weight: 0.5000
@@ -262,139 +130,57 @@ Final weight:   1.585380
 Final loss:     7.692325
 ```
 
-Training output:
+The loss decreased but did not reach zero.
+
+There is no single `weight` that can represent both:
 
 ```text
-Epoch   1 | Loss: 20.222011 | Weight: 1.585115
-Epoch  10 | Loss:  7.692325 | Weight: 1.585380
-Epoch 100 | Loss:  7.692325 | Weight: 1.585380
+y = 3 × x
 ```
 
----
-
-## Observation
-
-The loss decreased:
+and the later constant value:
 
 ```text
-20.222011
-     ↓
-7.692325
+y = 15
 ```
-
-but never reached zero.
-
-The model found a compromise rather than perfectly fitting the data.
-
-This happens because no single value of `weight` can satisfy all examples.
-
-For example:
-
-```text
-1 → 3    requires weight = 3
-2 → 6    requires weight = 3
-3 → 9    requires weight = 3
-4 → 12   requires weight = 3
-5 → 15   requires weight = 3
-```
-
-But:
-
-```text
-6 → 15   requires weight = 2.5
-7 → 15   requires weight ≈ 2.14
-8 → 15   requires weight = 1.875
-9 → 15   requires weight ≈ 1.67
-```
-
-There is no single weight that satisfies both behaviors.
-
----
 
 ## What We Learned
 
-A model can only learn relationships that its architecture is capable of representing.
+The optimizer was not failing. The model was simply unable to represent the underlying relationship.
 
-Our model:
+This introduced an important principle:
 
-```text
-prediction = weight × input
-```
+> A model can only learn relationships that its architecture can represent.
 
-can represent a straight-line relationship through the origin.
-
-It cannot represent:
-
-```text
-linear growth
-+
-constant value
-```
-
-at the same time.
-
-The optimizer is not failing.
-
-The model is simply **too simple for the problem**.
-
-This is an important machine-learning concept:
-
-> When the model cannot represent the underlying relationship, training may find the best available approximation instead of a perfect solution.
-
----
-
-## Next Direction
-
-This experiment motivates the need for more expressive models.
-
-We will progressively introduce:
-
-```text
-Bias
-  ↓
-Multiple Neurons
-  ↓
-Activation Functions
-  ↓
-Multiple Layers
-```
+This motivates adding more expressive components.
 
 ---
 
 # Experiment 03 — Add Bias
 
-**Status:** In Progress
+**Status:** Completed
 
 ## Objective
 
-Extend the model from:
+Extend the neuron from:
 
 ```text
-y = 3x
+y = 3 × x
 ```
 
 to:
 
 ```text
-y = 3x + 2
+y = 3 × x + 2
 ```
 
-Model:
+## Model
 
 ```text
-prediction = weight × input + bias
+prediction = (weight × input) + bias
 ```
 
-The model must learn both:
-
-```text
-weight ≈ 3
-bias ≈ 2
-```
-
----
-
-## Training Data
+Training data:
 
 ```text
 x    y
@@ -406,67 +192,21 @@ x    y
 5    17
 ```
 
----
-
-## Initial Parameters
-
-The model starts with incorrect parameters:
+Initial parameters:
 
 ```text
 weight = 0.5
 bias   = 0.0
 ```
 
-The `bias` parameter defaults to `0.0` so the neuron remains backward compatible with the original linear model.
-
----
-
 ## New Concepts
 
-- Bias
-- Multiple trainable parameters
+- Bias as a trainable parameter
 - Weight gradient
 - Bias gradient
-- Multiple parameter updates
+- Updating multiple parameters
 
----
-
-## Forward Pass
-
-The neuron now calculates:
-
-```text
-prediction = (weight × input) + bias
-```
-
-Example:
-
-```text
-weight = 3
-bias   = 2
-input  = 4
-
-prediction = (3 × 4) + 2
-           = 14
-```
-
----
-
-## Backward Pass
-
-The neuron calculates separate gradients for both trainable parameters:
-
-```text
-Weight Gradient
-       ↓
-Weight Update
-
-Bias Gradient
-       ↓
-Bias Update
-```
-
-The gradients are:
+Gradients:
 
 ```text
 weight_gradient = output_gradient × input
@@ -474,14 +214,12 @@ weight_gradient = output_gradient × input
 bias_gradient = output_gradient
 ```
 
----
-
-## Training Workflow
+## Workflow
 
 ```text
 Input
   ↓
-Forward Pass
+Weight × Input + Bias
   ↓
 Prediction
   ↓
@@ -494,29 +232,44 @@ Neuron Backward
   └── Bias Gradient
           ↓
       Optimizer
-       ├── Weight
-       └── Bias
           ↓
-Updated Parameters
-  ↓
-Repeat
+Updated Weight + Bias
 ```
+
+## What We Learned
+
+A neuron can now learn both:
+
+```text
+weight
+bias
+```
+
+The optimizer can update either parameter using the same:
+
+```text
+parameter + gradient + learning rate
+```
+
+mechanism.
 
 ---
 
-## Implementation
+# Experiment 04 — Multiple Neurons
 
-Core implementation:
+**Status:** Completed
+
+## Objective
+
+Move from one neuron to a layer containing multiple neurons.
 
 ```text
-src/llm_from_scratch/core/
-├── neuron.py
-├── loss.py
-├── optimizer.py
-└── training.py
+              ┌── Neuron 1 ──→ Output 1
+Input ────────┼── Neuron 2 ──→ Output 2
+              └── Neuron 3 ──→ Output 3
 ```
 
-The neuron now supports:
+Each neuron has its own:
 
 ```text
 weight
@@ -525,203 +278,189 @@ weight gradient
 bias gradient
 ```
 
-The training step updates both `weight` and `bias`.
+## New Concepts
 
----
-
-## Tests
-
-The neuron tests verify:
-
-```text
-Forward pass with bias
-Weight gradient
-Bias gradient
-```
-
-The training tests verify:
-
-```text
-Weight is updated
-Bias is updated
-```
-
-Current test suite:
-
-```text
-10 tests passed
-```
-
----
+- Layer
+- Multiple neurons
+- Multiple outputs
+- Gradient propagation through a layer
+- Multi-output loss
+- Training a layer instead of a single neuron
 
 ## Experiment
 
-```text
-experiments/
-└── 03_bias_learning.py
-```
-
-The experiment will train the neuron on:
+The model was trained to learn:
 
 ```text
-y = 3x + 2
+Neuron 1 → y = 3 × x
+Neuron 2 → y = 5 × x
+Neuron 3 → y = 7 × x
 ```
 
-and measure whether it can discover:
+Starting weights:
 
 ```text
-weight ≈ 3
-bias   ≈ 2
+[0.5, 0.5, 0.5]
 ```
 
----
-
-## Results
-
-**Pending experiment execution.**
-
-Record after training:
+After extended training:
 
 ```text
-Initial weight:
-Initial bias:
-
-Final weight:
-Final bias:
-
-Initial loss:
-Final loss:
-
-Epochs:
-Learning rate:
-Training time:
+[3.0, 5.0, 7.0]
 ```
 
----
+with loss approaching zero.
 
-## Questions
-
-- Why do we need bias?
-- How does bias change what a neuron can represent?
-- Can both parameters converge?
-- How does the gradient differ for weight and bias?
-- Does adding bias allow the model to represent relationships that the original neuron could not?
-
----
-
-## What We Learned
-
-The neuron now has more than one trainable parameter.
-
-Instead of learning only:
-
-```text
-weight
-```
-
-it can learn:
-
-```text
-weight
-bias
-```
-
-The optimizer itself does not need to know what a parameter represents. It simply receives:
-
-```text
-parameter
-gradient
-learning rate
-```
-
-and returns an updated parameter.
-
-This allows the same optimizer to update both weight and bias.
-
----
-
-# Experiment 04 — Multiple Neurons
-
-**Status:** Planned
-
-## Objective
-
-Move from a single neuron to a small layer.
+## Training Flow
 
 ```text
 Input
   ↓
-Neuron 1
-Neuron 2
-Neuron 3
+Layer
+  ├── Neuron 1
+  ├── Neuron 2
+  └── Neuron 3
   ↓
-Output
+Predictions
+  ↓
+Multi-output Loss
+  ↓
+Gradients
+  ↓
+Layer Backward
+  ↓
+Each Neuron
+  ↓
+Optimizer
+  ↓
+Updated Parameters
 ```
 
----
+## What We Learned
 
-## New Concepts
+Multiple neurons can learn different relationships from the same input.
 
-- Layers
-- Multiple weights
-- Multiple biases
-- Vectors
-- Matrix operations
-
----
-
-## Questions
-
-- How do multiple neurons cooperate?
-- What does each neuron learn?
-- Does adding neurons improve model capacity?
+The `Layer` coordinates neurons, while each `Neuron` remains responsible for its own calculations and gradients.
 
 ---
 
 # Experiment 05 — Activation Functions
 
-**Status:** Planned
+**Status:** Completed
 
 ## Objective
 
-Introduce non-linearity.
+Introduce non-linearity using ReLU.
 
-Initial activation:
+ReLU stands for **Rectified Linear Unit**:
 
 ```text
+ReLU(x) = max(0, x)
+```
+
+Forward behavior:
+
+```text
+positive → unchanged
+negative → 0
+zero     → 0
+```
+
+Backward behavior:
+
+```text
+raw input > 0  → gradient passes through
+raw input ≤ 0  → gradient becomes 0
+```
+
+## Why Activation Matters
+
+Without activation:
+
+```text
+Layer
+  ↓
+Linear calculation
+  ↓
+Layer
+  ↓
+Linear calculation
+```
+
+Stacking linear transformations still produces a linear transformation.
+
+With activation:
+
+```text
+Layer
+  ↓
+Linear calculation
+  ↓
+ReLU
+  ↓
+Layer
+  ↓
+Linear calculation
+  ↓
 ReLU
 ```
 
-Later:
+the network can represent non-linear relationships.
+
+## ReLU Experiment
+
+Initial parameters:
 
 ```text
-Sigmoid
-Tanh
-GELU
+weight = 0.5
+bias   = 1.0
 ```
 
----
-
-## Experiment
-
-Train a model on a relationship that cannot be represented well using a simple linear function.
-
-Compare:
+Target relationship:
 
 ```text
-Without activation
-vs
-With activation
+output = ReLU(2 × input)
 ```
 
----
+Training data:
 
-## Questions
+```text
+Input    Target
+----------------
+-3       0
+-2       0
+-1       0
+ 0       0
+ 1       2
+ 2       4
+ 3       6
+```
 
-- Why do neural networks need non-linear activation?
-- What happens when all layers are linear?
-- How does ReLU change the output?
-- What happens to gradients?
+After training:
+
+```text
+weight ≈ 2.0
+bias   ≈ 0.0
+loss   ≈ 0
+```
+
+Predictions:
+
+```text
+-3 → 0
+-2 → 0
+-1 → 0
+ 0 → 0
+ 1 → 2
+ 2 → 4
+ 3 → 6
+```
+
+## What We Learned
+
+Activation functions transform the raw output of a neuron and introduce non-linearity.
+
+ReLU also participates in backpropagation by controlling whether a gradient passes through the neuron.
 
 ---
 
@@ -731,9 +470,9 @@ With activation
 
 ## Objective
 
-Build a reusable training step and use it inside an experiment-level training loop.
+Create a reusable training component that coordinates the learning cycle.
 
-The reusable training step performs:
+The training step performs:
 
 ```text
 Forward
@@ -742,22 +481,20 @@ Loss
   ↓
 Loss Gradient
   ↓
-Neuron Gradient
+Backward
   ↓
 Optimizer
   ↓
 Updated Parameters
 ```
 
-The experiment-level loop repeats this process over:
+The experiment loop repeats this over:
 
 ```text
 Epochs
-    ↓
+  ↓
 Training Examples
 ```
-
----
 
 ## Implementation
 
@@ -767,40 +504,7 @@ The training workflow is implemented in:
 src/llm_from_scratch/core/training.py
 ```
 
-The trainer coordinates:
-
-```text
-Neuron
-Loss
-Optimizer
-```
-
-without implementing their internal mathematics.
-
----
-
-## Metrics
-
-Track:
-
-```text
-Epoch
-Loss
-Parameters
-Training time
-```
-
-Example:
-
-```text
-Epoch    Loss
-----------------
-1        ...
-10       ...
-20       ...
-50       ...
-100      ...
-```
+The trainer coordinates the model layer, loss function, and optimizer without implementing their internal mathematics.
 
 ---
 
@@ -810,17 +514,9 @@ Epoch    Loss
 
 ## Objective
 
-Verify that our manually implemented gradients are correct.
+Verify manually calculated gradients against numerical gradients.
 
-Compare:
-
-```text
-Analytical Gradient
-        vs
-Numerical Gradient
-```
-
-Numerical approximation:
+Approximation:
 
 ```text
 f(x + ε) - f(x - ε)
@@ -828,13 +524,11 @@ f(x + ε) - f(x - ε)
         2ε
 ```
 
----
-
 ## Success Criteria
 
-The analytical and numerical gradients should be very close.
+Analytical and numerical gradients should be very close.
 
-This experiment is particularly important because a small error in backpropagation can make training fail.
+This will give us confidence in our backpropagation implementation before the model becomes more complex.
 
 ---
 
@@ -844,9 +538,7 @@ This experiment is particularly important because a small error in backpropagati
 
 ## Objective
 
-Move from numerical relationships to text.
-
-Train a tiny model to predict the next character.
+Move from numerical relationships to text and predict the next character.
 
 Example:
 
@@ -857,10 +549,7 @@ h         e
 he        l
 hel       l
 hell      o
-hello     space
 ```
-
----
 
 ## New Concepts
 
@@ -878,17 +567,11 @@ hello     space
 
 ## Objective
 
-Convert text into numerical representations.
-
-Example:
+Convert text into numerical token representations.
 
 ```text
 "hello"
-```
-
-could become:
-
-```text
+   ↓
 [7, 4, 11, 11, 14]
 ```
 
@@ -896,11 +579,9 @@ and back:
 
 ```text
 [7, 4, 11, 11, 14]
-        ↓
+   ↓
 "hello"
 ```
-
----
 
 ## New Concepts
 
@@ -919,7 +600,7 @@ and back:
 
 ## Objective
 
-Replace simple token IDs with learned vector representations.
+Replace token IDs with learned vector representations.
 
 ```text
 Token ID
@@ -937,8 +618,6 @@ drug
 [0.12, -0.42, 0.87, ...]
 ```
 
----
-
 ## Questions
 
 - Why isn't an integer token ID enough?
@@ -954,45 +633,25 @@ drug
 
 ## Objective
 
-Implement self-attention from scratch.
-
-Workflow:
+Implement single-head self-attention from scratch.
 
 ```text
-Input embeddings
+Input Embeddings
        ↓
-Query
-Key
-Value
+Query / Key / Value
        ↓
-Attention scores
+Attention Scores
        ↓
-Weighted values
+Weighted Values
        ↓
-Context representation
+Context Representation
 ```
-
----
-
-## Initial Scope
-
-Start with:
-
-```text
-Single-head self-attention
-```
-
-Do not start with multi-head attention.
-
----
 
 ## Questions
 
-- What does Query represent?
-- What does Key represent?
-- What does Value represent?
+- What do Query, Key, and Value represent?
 - How are attention scores calculated?
-- Why does scaling matter?
+- Why is scaling required?
 - What information does attention capture?
 
 ---
@@ -1003,24 +662,22 @@ Do not start with multi-head attention.
 
 ## Objective
 
-Extend single-head attention into multiple attention heads.
+Extend self-attention to multiple heads.
 
 ```text
 Input
   ↓
- ┌───────┬───────┬───────┬───────┐
-Head 1  Head 2  Head 3  Head 4
- └───────┴───────┴───────┴───────┘
-              ↓
-           Combine
+ ┌───────┬───────┬───────┐
+Head 1  Head 2  Head 3  ...
+ └───────┴───────┴───────┘
+          ↓
+        Combine
 ```
-
----
 
 ## Questions
 
 - Why use multiple heads?
-- Do different heads learn different relationships?
+- Can different heads learn different relationships?
 - What happens when the number of heads changes?
 
 ---
@@ -1032,8 +689,6 @@ Head 1  Head 2  Head 3  Head 4
 ## Objective
 
 Build the first complete Transformer block.
-
-Architecture:
 
 ```text
 Input
@@ -1053,8 +708,6 @@ Layer Normalization
 Output
 ```
 
----
-
 ## New Concepts
 
 - Residual connections
@@ -1070,9 +723,7 @@ Output
 
 ## Objective
 
-Stack Transformer blocks and build a tiny language model.
-
-Architecture:
+Stack Transformer blocks and build a small language-model architecture.
 
 ```text
 Text
@@ -1085,9 +736,7 @@ Embeddings
  ↓
 Positional Information
  ↓
-Transformer Block
- ↓
-Transformer Block
+Transformer Blocks
  ↓
 Linear Output
  ↓
@@ -1096,11 +745,7 @@ Logits
 Next Token
 ```
 
----
-
-## Training Objective
-
-Next-token prediction.
+Training objective:
 
 ```text
 Input:
@@ -1122,21 +767,15 @@ Target:
 
 Train a complete small language model on a controlled dataset.
 
-The model should be capable of generating short sequences based on learned patterns.
-
----
-
-## Metrics
-
 Track:
 
 ```text
-Number of parameters
-Training dataset size
+Parameter count
+Dataset size
 Training time
 Epochs
 Learning rate
-Final loss
+Training loss
 Validation loss
 Generation examples
 ```
@@ -1149,7 +788,7 @@ Generation examples
 
 ## Objective
 
-Understand how a language model converts probabilities into generated text.
+Understand how model probabilities become generated text.
 
 Compare:
 
@@ -1162,38 +801,20 @@ Top-P
 
 ---
 
-## Questions
-
-- Why doesn't the model always select the highest-probability token?
-- How does temperature affect generation?
-- What happens when temperature is very low?
-- What happens when temperature is very high?
-
----
-
 # Experiment 17 — Overfitting
 
 **Status:** Planned
 
 ## Objective
 
-Deliberately make the model overfit a small dataset.
-
-Observe:
+Deliberately overfit a small dataset and observe:
 
 ```text
 Training Loss ↓↓↓
 Validation Loss ↑
 ```
 
----
-
-## Questions
-
-- What is overfitting?
-- Why does it happen?
-- How can it be detected?
-- What techniques can reduce it?
+Explore why overfitting happens and how it can be detected and reduced.
 
 ---
 
@@ -1203,15 +824,7 @@ Validation Loss ↑
 
 ## Objective
 
-Reimplement selected components using NumPy.
-
-Compare:
-
-```text
-Pure Python
-vs
-NumPy
-```
+Compare selected components implemented with pure Python and NumPy.
 
 Measure:
 
@@ -1229,19 +842,9 @@ Implementation complexity
 
 ## Objective
 
-Implement the same basic model using PyTorch.
+Implement the same basic model using PyTorch and compare it with our implementation.
 
-Compare:
-
-```text
-Our implementation
-vs
-PyTorch
-```
-
-The purpose is not simply performance comparison.
-
-The purpose is to understand what PyTorch abstracts away.
+The goal is to understand what a framework such as PyTorch abstracts away.
 
 ---
 
@@ -1296,78 +899,17 @@ Explore:
 
 Understand why GPUs accelerate neural-network workloads.
 
-Explore:
-
 ```text
 CPU
  ↓
 GPU
  ↓
-Parallel computation
+Parallel Computation
  ↓
-Matrix operations
+Matrix Operations
 ```
 
 Later investigate CUDA and GPU kernels.
-
----
-
-# Experiment Template
-
-Every new experiment should use the following structure.
-
-```markdown
-# Experiment XX — Name
-
-**Status:** Planned / In Progress / Completed
-
-## Objective
-
-What are we trying to learn?
-
-## Hypothesis
-
-What do we expect to happen?
-
-## Implementation
-
-What did we build?
-
-## Configuration
-
-- Dataset:
-- Parameters:
-- Learning rate:
-- Epochs:
-- Batch size:
-
-## Results
-
-What happened?
-
-## Metrics
-
-- Initial loss:
-- Final loss:
-- Training time:
-- Parameter count:
-
-## Observations
-
-What did we notice?
-
-## Problems
-
-What failed or behaved unexpectedly?
-
-## What We Learned
-
-What did this experiment teach us?
-
-## Next Step
-
-What should we investigate next?
-```
 
 ---
 
@@ -1375,9 +917,7 @@ What should we investigate next?
 
 ## Rule 1 — Record failures
 
-A failed experiment is still valuable.
-
-Document:
+A failed experiment is useful if we record:
 
 ```text
 What failed
@@ -1386,78 +926,38 @@ How it was fixed
 What we learned
 ```
 
----
-
 ## Rule 2 — Change one important variable at a time
 
-When investigating behavior, avoid changing everything simultaneously.
-
-For example:
-
-```text
-learning rate
-```
-
-should be tested independently before changing:
-
-```text
-architecture
-dataset
-batch size
-optimizer
-```
-
-This makes the results easier to understand.
-
----
+When investigating behavior, avoid changing the architecture, dataset, learning rate, and optimizer simultaneously.
 
 ## Rule 3 — Keep experiments reproducible
 
-Record:
-
-```text
-Random seed
-Dataset
-Configuration
-Code version
-```
-
-Whenever practical.
-
----
+Record configuration, dataset, and random seed whenever practical.
 
 ## Rule 4 — Measure before optimizing
 
-Do not assume something is slow.
-
-Measure it.
-
-Later comparisons should include actual timing and memory measurements.
-
----
+Do not assume something is slow. Measure it.
 
 ## Rule 5 — Understand before using frameworks
 
-Before introducing a framework abstraction, first understand the underlying concept.
-
-Examples:
+Understand the underlying concept before introducing a framework abstraction.
 
 ```text
-Manual gradient
+Manual Gradient
       ↓
-Automatic differentiation
+Automatic Differentiation
 
-Manual matrix operations
+Manual Matrix Operations
       ↓
 NumPy
 
-Manual neural network
+Manual Neural Network
       ↓
 PyTorch
 
-Manual attention
+Manual Attention
       ↓
-Transformer implementation
+Transformer Implementation
 ```
 
 ---
@@ -1469,97 +969,106 @@ Completed:
 ```text
 01 — Linear Learning             ✅
 02 — Linear Model Limitation     ✅
+03 — Add Bias                    ✅
+04 — Multiple Neurons            ✅
+05 — Activation Functions        ✅
 06 — Training Loop               ✅
 ```
 
-In Progress:
+Current architecture:
 
 ```text
-03 — Add Bias                    🔄
-```
-
-The current implementation has successfully demonstrated:
-
-```text
-Neuron
+Input
   ↓
-Forward Pass
+Layer
+  ↓
+Multiple Neurons
+  ↓
+Weight × Input + Bias
+  ↓
+Activation
+  ↓
+Output
   ↓
 Loss
-  ↓
-Gradient
   ↓
 Backpropagation
   ↓
 Gradient Descent
   ↓
-Parameter Update
-  ↓
-Training Loop
+Updated Parameters
 ```
 
-The neuron now supports:
+The project has now demonstrated:
 
 ```text
-Weight
-Bias
-Weight Gradient
-Bias Gradient
+Neuron
+  ↓
+Layer
+  ↓
+Activation
+  ↓
+Loss
+  ↓
+Backpropagation
+  ↓
+Optimizer
+  ↓
+Training
 ```
-
-The training step updates both trainable parameters.
 
 ---
 
 # Immediate Next Step
 
-Complete:
+The next major capability is:
 
 ```text
-03 — Add Bias
+Multiple Layers
 ```
 
-Create:
+The target architecture is:
 
 ```text
-experiments/03_bias_learning.py
+Input
+  ↓
+Layer 1
+  ↓
+Activation
+  ↓
+Layer 2
+  ↓
+Activation
+  ↓
+Output
 ```
 
-Train the model on:
+This will introduce forward and backward propagation across multiple layers and move the project toward the architecture used by modern neural networks.
+
+After that:
 
 ```text
-y = 3x + 2
+Character Prediction
+  ↓
+Tokenizer
+  ↓
+Embeddings
+  ↓
+Self-Attention
+  ↓
+Transformer
+  ↓
+Tiny Language Model
 ```
-
-and verify whether it can discover:
-
-```text
-weight ≈ 3
-bias   ≈ 2
-```
-
-After the experiment is executed, record the actual training results in this document.
 
 ---
 
 # Long-Term Goal
 
-Start with:
-
-```text
-y = 3x
-```
-
-and progressively build toward:
-
-```text
-Tiny Transformer
-       ↓
-Tiny Language Model
-```
+Build a tiny language model from first principles.
 
 The important outcome is not the size of the final model.
 
 The important outcome is:
 
-> **Understanding how the model learns.**
+> **Understanding how the model learns and how each component contributes to a language model.**
