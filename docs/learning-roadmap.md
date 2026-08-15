@@ -1,10 +1,12 @@
-# LLM From Scratch — Development Plan
+# LLM From Scratch --- Development Plan
 
 ## 1. Project Goal
 
-Build a small language model from first principles to understand how modern neural networks and LLMs work internally.
+Build a small language model from first principles to understand how
+modern neural networks and LLMs work internally.
 
-The project will intentionally begin without PyTorch, TensorFlow, Hugging Face, or other ML frameworks.
+The project will intentionally begin without PyTorch, TensorFlow,
+Hugging Face, or other ML frameworks.
 
 Learning path:
 
@@ -62,7 +64,8 @@ Suggested repository name:
 llm-from-scratch
 ```
 
-The repository should contain only generic learning code and public datasets/examples.
+The repository should contain only generic learning code and public
+datasets/examples.
 
 ## Private Repository
 
@@ -86,28 +89,33 @@ This private project can later contain:
 - Business rules
 - Customer-specific logic
 
-Important: the public project should teach the underlying technology, while the private project contains the actual healthcare/business intelligence.
+Important: the public project should teach the underlying technology,
+while the private project contains the actual healthcare/business
+intelligence.
 
 ---
 
 # 3. Development Principles
 
-1. Start with plain Python.
-2. Avoid ML frameworks initially.
-3. Implement the mathematics ourselves.
-4. Keep every stage small and testable.
-5. Add automated tests from the beginning.
-6. Record experiments and results.
-7. Introduce NumPy only after the pure-Python implementation is understood.
-8. Introduce PyTorch only after we understand what it is replacing.
-9. Later investigate C++ and Rust for performance/system-level implementations.
-10. Never put private healthcare/customer data into the public repository.
+1.  Start with plain Python.
+2.  Avoid ML frameworks initially.
+3.  Implement the mathematics ourselves.
+4.  Keep every stage small and testable.
+5.  Add automated tests from the beginning.
+6.  Record experiments and results.
+7.  Introduce NumPy only after the pure-Python implementation is
+    understood.
+8.  Introduce PyTorch only after we understand what it is replacing.
+9.  Later investigate C++ and Rust for performance/system-level
+    implementations.
+10. Never put private healthcare/customer data into the public
+    repository.
 
 ---
 
 # 4. Initial Dependencies
 
-## Phase 1 — No Third-Party ML Packages
+## Phase 1 --- No Third-Party ML Packages
 
 Required:
 
@@ -184,12 +192,9 @@ llm-from-scratch/
 │   ├── 01_linear_learning.py
 │   ├── 02_single_neuron.py
 │   ├── 03_multi_neuron.py
-│   ├── 04_training_loop.py
-│   ├── 05_character_prediction.py
-│   ├── 06_tokenization.py
-│   ├── 07_embeddings.py
-│   ├── 08_attention.py
-│   └── 09_tiny_transformer.py
+│   ├── 04_activation.py
+│   ├── 05_multiple_layers.py
+│   └── ...
 │
 ├── tests/
 │   ├── test_neuron.py
@@ -203,11 +208,12 @@ llm-from-scratch/
     └── experiments.ipynb
 ```
 
-The notebook is optional. The main implementation should remain normal Python modules so the project stays understandable and testable.
+The notebook is optional. The main implementation should remain normal
+Python modules so the project stays understandable and testable.
 
 ---
 
-# 6. Phase 1 — First Learning Model
+# 6. Phase 1 --- First Learning Model
 
 ## Objective
 
@@ -293,7 +299,8 @@ loss.backward(prediction, target)
 
 ### Purpose
 
-Keep gradient-related mathematics separate from the model implementation.
+Keep gradient-related mathematics separate from the model
+implementation.
 
 Initial responsibilities:
 
@@ -425,7 +432,7 @@ for epoch:
 
 ---
 
-# 8. Phase 2 — Multi-Neuron Network
+# 8. Phase 2 --- Multi-Neuron Network
 
 Objective:
 
@@ -477,7 +484,7 @@ Softmax
 
 ---
 
-# 9. Phase 3 — Character-Level Language Model
+# 10. Phase 3 --- Character-Level Language Model
 
 Objective:
 
@@ -517,7 +524,7 @@ Vocabulary
 
 ---
 
-# 10. Phase 4 — Tokenization
+# 11. Phase 4 --- Tokenization
 
 Move from individual characters toward tokens.
 
@@ -549,7 +556,7 @@ Tokenizer
 
 ---
 
-# 11. Phase 5 — Embeddings
+# 12. Phase 5 --- Embeddings
 
 Objective:
 
@@ -577,7 +584,7 @@ Learn:
 
 ---
 
-# 12. Phase 6 — Attention
+# 13. Phase 6 --- Attention
 
 Objective:
 
@@ -617,7 +624,7 @@ MultiHeadAttention
 
 ---
 
-# 13. Phase 7 — Transformer Block
+# 14. Phase 7 --- Transformer Block
 
 Build:
 
@@ -645,7 +652,7 @@ Then stack multiple blocks.
 
 ---
 
-# 14. Phase 8 — Tiny LLM
+# 15. Phase 8 --- Tiny LLM
 
 Final educational architecture:
 
@@ -675,11 +682,12 @@ Goal:
 
 Generate short text based on learned training data.
 
-This will be a deliberately tiny model, designed for understanding rather than useful production-quality generation.
+This will be a deliberately tiny model, designed for understanding
+rather than useful production-quality generation.
 
 ---
 
-# 15. Training Workflow
+# 16. Training Workflow
 
 Every model should follow the same fundamental cycle:
 
@@ -727,7 +735,7 @@ attention
 
 ---
 
-# 16. Testing Strategy
+# 17. Testing Strategy
 
 Every important mathematical component should have tests.
 
@@ -764,11 +772,12 @@ Analytical gradient
 Numerical gradient
 ```
 
-This is important because it verifies that our backpropagation implementation is actually correct.
+This is important because it verifies that our backpropagation
+implementation is actually correct.
 
 ---
 
-# 17. Experiment Tracking
+# 18. Experiment Tracking
 
 Each experiment should record:
 
@@ -794,7 +803,7 @@ docs/experiments.md
 
 ---
 
-# 18. Package Evolution
+# 19. Package Evolution
 
 Do NOT install everything at the beginning.
 
@@ -836,11 +845,12 @@ Purpose:
 - GPU
 - optimized training
 
-Only introduce these after implementing the underlying concepts ourselves.
+Only introduce these after implementing the underlying concepts
+ourselves.
 
 ---
 
-# 19. Later Systems Track
+# 20. Later Systems Track
 
 After the Python implementation is understood:
 
@@ -872,7 +882,7 @@ systems / performance
 
 ---
 
-# 20. Future Project — NDC/RxNorm Intelligence
+# 21. Future Project --- NDC/RxNorm Intelligence
 
 Keep this in a **separate private repository**.
 
@@ -894,9 +904,11 @@ Confidence score
 Matched / Review
 ```
 
-The public `llm-from-scratch` repository should provide the educational foundation.
+The public `llm-from-scratch` repository should provide the educational
+foundation.
 
-The private NDC/RxNorm repository will contain the actual healthcare/business implementation.
+The private NDC/RxNorm repository will contain the actual
+healthcare/business implementation.
 
 Important architectural principle:
 
@@ -906,13 +918,15 @@ RxNorm + deterministic rules
         ML / LLM assistance
 ```
 
-Do not rely on an LLM alone for medication identity or equivalence decisions.
+Do not rely on an LLM alone for medication identity or equivalence
+decisions.
 
 ---
 
-# 21. Future Project — Bhagavad Gita Model
+# 22. Future Project --- Bhagavad Gita Model
 
-This can eventually become a second project built on the same foundation.
+This can eventually become a second project built on the same
+foundation.
 
 Potential progression:
 
@@ -946,7 +960,7 @@ Modern application
 
 ---
 
-# 22. Definition of Success
+# 23. Definition of Success
 
 The first milestone is NOT:
 
@@ -954,7 +968,8 @@ The first milestone is NOT:
 
 The first milestone is:
 
-> Build a model whose random parameters become useful parameters through training, and understand exactly why that happened.
+> Build a model whose random parameters become useful parameters through
+> training, and understand exactly why that happened.
 
 Then progressively remove the mystery:
 
@@ -978,61 +993,219 @@ Then progressively remove the mystery:
 
 ---
 
-# 23. First Development Session
+# 24. Current Development Status
 
-Start with only these files:
+The initial neural-network foundation has now been implemented and
+tested.
 
-```text
-src/llm_from_scratch/core/
-├── neuron.py
-├── loss.py
-├── optimizer.py
-└── training.py
-
-experiments/
-└── 01_linear_learning.py
-
-tests/
-├── test_neuron.py
-└── test_loss.py
-```
-
-First target:
+## Completed Milestone
 
 ```text
-Input → Neuron → Prediction → Loss
-                      ↓
-                 Backpropagation
-                      ↓
-               Gradient Descent
-                      ↓
-                 Updated Weight
+Multiple Inputs
+      ↓
+Neuron
+      ↓
+Layer
+      ↓
+Network
+      ↓
+Trainer
+      ↓
+Gradient Descent
 ```
 
-Dataset:
+The current implementation supports:
+
+- Multiple inputs per neuron
+- Multiple weights per neuron
+- Individual weight gradients
+- Bias gradients
+- Input gradients
+- ReLU activation
+- Multiple neurons per layer
+- Input-gradient aggregation inside a layer
+- Multiple layers inside a network
+- Forward propagation through multiple layers
+- Backward propagation through multiple layers
+- Network-level training through `Trainer`
+- Gradient-based updates for every weight and bias
+
+## Current Experiments
+
+### `03_multi_neuron.py`
+
+Demonstrates:
 
 ```text
-1 → 3
-2 → 6
-3 → 9
-4 → 12
-5 → 15
+Input
+  ↓
+Multiple Neurons
+  ↓
+Output Vector
 ```
 
-Success criteria:
+### `04_activation.py`
+
+Demonstrates ReLU in a trainable model:
 
 ```text
-The model starts with random parameters
-and learns approximately:
-
-y = 3x
+Input
+  ↓
+Network
+  ↓
+Layer
+  ↓
+Neuron
+  ↓
+ReLU
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Backpropagation
 ```
 
-Once this works, stop and document what happened before moving to the next phase.
+The experiment learns the relationship:
+
+```text
+y = ReLU(2 × x)
+```
+
+and converges to approximately:
+
+```text
+weight = 2
+bias   = 0
+```
+
+### `05_multiple_layers.py`
+
+Demonstrates forward and backward propagation through two layers:
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+Layer 2
+  ↓
+Output
+```
+
+Backward propagation runs in reverse:
+
+```text
+Output Gradient
+  ↓
+Layer 2
+  ↓
+Layer 1
+  ↓
+Input Gradient
+```
+
+The experiment currently validates the mathematical flow. The next step
+is to use the same architecture for a complete multi-layer training
+experiment.
+
+## Test Status
+
+The core implementation is covered by automated tests.
+
+Current validated areas:
+
+```text
+Activation      ✓
+Neuron          ✓
+Layer           ✓
+Network         ✓
+Loss            ✓
+Optimizer       ✓
+Trainer         ✓
+Multi-layer     ✓
+```
+
+The full test suite currently passes with:
+
+```text
+28 passed
+```
+
+## Current Architecture
+
+```text
+                 Network
+                    │
+          ┌─────────┴─────────┐
+          ↓                   ↓
+       Layer 1             Layer 2
+          ↓                   ↓
+      Neurons              Neurons
+          ↓                   ↓
+       ReLU                 ReLU
+          │                   │
+          └───────→───────────┘
+```
+
+Training flow:
+
+```text
+Input
+  ↓
+Network.forward()
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Loss Gradient
+  ↓
+Network.backward()
+  ↓
+Gradients
+  ↓
+Trainer
+  ↓
+GradientDescent
+  ↓
+Updated Weights + Biases
+```
+
+## Next Immediate Step
+
+Before moving to tokenization, the project should complete the
+multi-layer training experiment.
+
+Goal:
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+Layer 2
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Backward through Layer 2
+  ↓
+Backward through Layer 1
+  ↓
+Update both layers
+  ↓
+Lower loss
+```
+
+After that milestone, continue toward character-level language modeling.
 
 ---
 
-# 24. Suggested Git Commit Sequence
+# 25. Suggested Git Commit Sequence
+
+Completed/active milestones should use small, meaningful commits:
 
 ```text
 chore: initialize llm from scratch project
@@ -1042,17 +1215,20 @@ feat: implement gradient descent optimizer
 feat: implement backpropagation
 feat: add first training loop
 test: add neural network core tests
-docs: document first learning experiment
 feat: add multi neuron network
-feat: add character level language model
-feat: add tokenizer and vocabulary
-feat: add embeddings
-feat: implement self attention
-feat: implement transformer block
-feat: build tiny language model
+feat: add activation function
+feat: add multi-layer network
+feat: integrate network training
+docs: document multi-layer neural network architecture
 ```
 
----
+For the current Feature 05 milestone, keep implementation and
+documentation commits separate when practical:
+
+```text
+feat: implement multi-layer neural network training
+docs: document multi-layer neural network architecture
+```
 
 ## Final Direction
 
@@ -1079,4 +1255,5 @@ The public project is the **laboratory**.
 
 The private NDC/RxNorm project is the **product**.
 
-The Gita project can become the **creative application** of everything we learn.
+The Gita project can become the **creative application** of everything
+we learn.

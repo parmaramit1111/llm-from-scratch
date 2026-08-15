@@ -1,8 +1,10 @@
-# Learning Basics — How Does a Model Learn?
+# Learning Basics --- How Does a Model Learn?
 
-Before learning about LLMs, Transformers, attention, or embeddings, understand one simple idea:
+Before learning about LLMs, Transformers, attention, or embeddings,
+understand one simple idea:
 
-> **A model learns by making a prediction, measuring how wrong it was, and adjusting itself to make a better prediction next time.**
+> **A model learns by making a prediction, measuring how wrong it was,
+> and adjusting itself to make a better prediction next time.**
 
 That's the entire foundation.
 
@@ -32,7 +34,7 @@ A machine-learning model works in a similar way.
 
 ---
 
-# 2. Neuron — The Student Who Makes a Guess
+# 2. Neuron --- The Student Who Makes a Guess
 
 A neuron takes an input and produces a prediction.
 
@@ -81,7 +83,7 @@ Prediction = 6
 
 ---
 
-# 3. Loss — How Wrong Was the Prediction?
+# 3. Loss --- How Wrong Was the Prediction?
 
 Now we need to measure the mistake.
 
@@ -149,7 +151,7 @@ Zero loss → Perfect prediction
 
 ---
 
-# 4. Gradient — Which Way Should We Move?
+# 4. Gradient --- Which Way Should We Move?
 
 Now we know the model is wrong.
 
@@ -195,7 +197,7 @@ High Loss
 
 ---
 
-# 5. Optimizer — Actually Make the Change
+# 5. Optimizer --- Actually Make the Change
 
 Now we know which direction to move.
 
@@ -272,7 +274,7 @@ target = 9
 weight = 1
 ```
 
-### Step 1 — Prediction
+### Step 1 --- Prediction
 
 ```text
 prediction = weight × input
@@ -280,7 +282,7 @@ prediction = weight × input
            = 3
 ```
 
-### Step 2 — Loss
+### Step 2 --- Loss
 
 ```text
 loss = (3 - 9)²
@@ -289,7 +291,7 @@ loss = (3 - 9)²
 
 That's a bad prediction.
 
-### Step 3 — Gradient
+### Step 3 --- Gradient
 
 The gradient tells us:
 
@@ -297,7 +299,7 @@ The gradient tells us:
 "The weight needs to increase."
 ```
 
-### Step 4 — Optimizer
+### Step 4 --- Optimizer
 
 The optimizer increases the weight.
 
@@ -473,7 +475,8 @@ Now we need to determine:
 
 > How much did each parameter contribute to the final error?
 
-**Backpropagation** calculates those gradients by working backward through the model.
+**Backpropagation** calculates those gradients by working backward
+through the model.
 
 ```text
 Forward:
@@ -502,7 +505,8 @@ Parameter gradients
 
 ### Remember:
 
-> **Backpropagation = calculating how each parameter should change based on the error.**
+> **Backpropagation = calculating how each parameter should change based
+> on the error.**
 
 ---
 
@@ -510,12 +514,14 @@ Parameter gradients
 
 If you're completely new to machine learning, remember just these:
 
-| Concept       | Simple meaning                  |
-| ------------- | ------------------------------- |
-| **Neuron**    | Makes a prediction              |
-| **Loss**      | Measures the mistake            |
-| **Gradient**  | Says which direction to change  |
-| **Optimizer** | Actually changes the parameters |
+Concept Simple meaning
+
+---
+
+**Neuron** Makes a prediction
+**Loss** Measures the mistake
+**Gradient** Says which direction to change
+**Optimizer** Actually changes the parameters
 
 Then:
 
@@ -578,7 +584,8 @@ Updated Parameters
 Repeat
 ```
 
-An LLM simply applies these ideas to a **much more complex model and enormous amounts of text**.
+An LLM simply applies these ideas to a **much more complex model and
+enormous amounts of text**.
 
 Later we will add:
 
@@ -600,8 +607,303 @@ But underneath all of that is still the same fundamental learning loop.
 
 # The One-Sentence Summary
 
-> **A machine-learning model learns by making predictions, measuring its mistakes, calculating how its parameters should change, updating them, and repeating the process until its predictions improve.**
+> **A machine-learning model learns by making predictions, measuring its
+> mistakes, calculating how its parameters should change, updating them,
+> and repeating the process until its predictions improve.**
 
 That's the foundation.
 
-Everything we're going to build in **LLM From Scratch** grows from this idea.
+Everything we're going to build in **LLM From Scratch** grows from this
+idea.
+
+---
+
+# 14. What We Have Implemented So Far
+
+The concepts above are now implemented in the project as a working,
+tested Python system.
+
+The architecture has evolved from a single neuron into a multi-layer
+trainable network:
+
+```text
+Input Vector
+    ↓
+Neuron
+    ↓
+Layer
+    ↓
+Network
+    ↓
+Loss
+    ↓
+Backpropagation
+    ↓
+Gradient Descent
+    ↓
+Updated Parameters
+```
+
+## Neuron
+
+The neuron now supports multiple inputs.
+
+Conceptually:
+
+```text
+weighted sum =
+    weight1 × input1
+  + weight2 × input2
+  + ...
+  + bias
+```
+
+It calculates:
+
+- weighted output
+- weight gradients
+- bias gradient
+- input gradients
+
+## Activation
+
+We introduced ReLU:
+
+```text
+ReLU(x) = x    when x > 0
+ReLU(x) = 0    when x ≤ 0
+```
+
+ReLU is applied after the neuron's weighted sum and also controls
+gradient flow during backpropagation.
+
+## Layer
+
+A layer contains multiple neurons that share the same input vector.
+
+```text
+Input Vector
+      ↓
+ ┌────┼────┐
+ ↓    ↓    ↓
+ N1   N2   N3
+ ↓    ↓    ↓
+ O1   O2   O3
+```
+
+During backward propagation, the layer sends the correct gradient to
+each neuron and aggregates their input gradients.
+
+## Network
+
+A network is a sequence of layers.
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+Layer 2
+  ↓
+Output
+```
+
+Forward propagation processes layers in order.
+
+Backward propagation processes them in reverse order:
+
+```text
+Output Gradient
+      ↓
+Layer 2
+      ↓
+Layer 1
+      ↓
+Input Gradient
+```
+
+This is our first working demonstration of backpropagation through
+multiple layers.
+
+## Trainer
+
+The Trainer now operates on the complete Network rather than a single
+Layer.
+
+Its training cycle is:
+
+```text
+Network.forward()
+      ↓
+Loss.forward()
+      ↓
+Loss.backward()
+      ↓
+Network.backward()
+      ↓
+Update every weight and bias
+```
+
+The optimizer still updates one parameter at a time. The Trainer
+coordinates all parameters across all layers.
+
+---
+
+# 15. Current Milestone
+
+We have verified the architecture with automated tests.
+
+Current verified components:
+
+```text
+Neuron
+    ✅ Multiple inputs
+    ✅ Multiple weights
+    ✅ Weight gradients
+    ✅ Bias gradients
+    ✅ Input gradients
+
+Activation
+    ✅ ReLU forward
+    ✅ ReLU backward
+
+Layer
+    ✅ Multiple neurons
+    ✅ Forward propagation
+    ✅ Backward propagation
+    ✅ Input-gradient aggregation
+
+Network
+    ✅ Multiple layers
+    ✅ Forward propagation
+    ✅ Reverse backward propagation
+
+Loss
+    ✅ Mean Squared Error
+    ✅ Loss gradients
+
+Optimizer
+    ✅ Gradient Descent
+
+Trainer
+    ✅ Network-based training
+    ✅ Multiple weights
+    ✅ Multiple layers
+    ✅ Weight and bias updates
+```
+
+The full test suite currently contains **28 passing tests**.
+
+This is an important milestone because the project has moved from
+explaining the learning loop to actually implementing that loop from
+first principles.
+
+---
+
+# 16. Experiments Completed
+
+## Experiment 03 --- Multiple Neurons
+
+Demonstrated:
+
+```text
+Input
+  ↓
+Multiple neurons
+  ↓
+Multiple outputs
+```
+
+The model successfully learned separate weights for multiple neurons.
+
+## Experiment 04 --- Activation / ReLU
+
+Demonstrated learning:
+
+```text
+y = ReLU(2 × x)
+```
+
+The model converged approximately to:
+
+```text
+weight = 2
+bias   = 0
+```
+
+and produced the expected predictions for positive and negative inputs.
+
+## Experiment 05 --- Multiple Layers
+
+Demonstrated:
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+Layer 2
+  ↓
+Output
+```
+
+Forward propagation was verified numerically, and backward propagation
+successfully carried gradients from Layer 2 back through Layer 1.
+
+The next step is to turn this into a full multi-layer training
+experiment and observe both layers learning together.
+
+---
+
+# 17. What Comes Next
+
+The immediate next milestone is:
+
+```text
+Train a real multi-layer network
+```
+
+The experiment should demonstrate:
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+Layer 2
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Backward through Layer 2
+  ↓
+Backward through Layer 1
+  ↓
+Update both layers
+  ↓
+Repeat
+```
+
+After that, we can move toward the language-model-specific concepts:
+
+```text
+Character Prediction
+        ↓
+Tokenization
+        ↓
+Vocabulary
+        ↓
+Embeddings
+        ↓
+Attention
+        ↓
+Transformer
+        ↓
+Tiny LLM
+```
+
+The important rule remains:
+
+> Do not move to the next abstraction until the current abstraction is
+> understood and tested.
