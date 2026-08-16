@@ -295,20 +295,24 @@ loss.backward(prediction, target)
 
 ---
 
-## `gradient.py`
+## `gradient_check.py`
 
 ### Purpose
 
-Keep gradient-related mathematics separate from the model
+Keep numerical gradient verification separate from the model
 implementation.
 
 Initial responsibilities:
 
-- Calculate derivatives
-- Validate numerical gradients
-- Help understand backpropagation
+- Calculate numerical gradients using central finite differences
+- Compare numerical gradients with analytical gradients
+- Validate backpropagation independently
 
-Later this may evolve into a small automatic-differentiation engine.
+The gradient checker is a verification tool rather than part of the
+normal training execution path.
+
+Later this may evolve into a broader automatic-differentiation and
+verification area.
 
 ---
 
@@ -339,15 +343,17 @@ optimizer.step(parameters, gradients)
 ### Class
 
 ```text
-DenseLayer
+Layer
 ```
 
 Responsibilities:
 
 - Manage multiple neurons
+- Pass the same input vector to every neuron
 - Perform forward pass
 - Perform backward pass
-- Expose parameters and gradients
+- Aggregate input gradients from all neurons
+- Expose trainable parameters and gradients
 
 Conceptual flow:
 
@@ -368,15 +374,15 @@ outputs
 ### Class
 
 ```text
-NeuralNetwork
+Network
 ```
 
 Responsibilities:
 
 - Manage multiple layers
-- Execute forward propagation
-- Execute backward propagation
-- Expose trainable parameters
+- Execute forward propagation in layer order
+- Execute backward propagation in reverse layer order
+- Expose the network's trainable structure
 
 Conceptual API:
 
@@ -995,10 +1001,12 @@ Then progressively remove the mystery:
 
 # 24. Current Development Status
 
-The initial neural-network foundation has now been implemented and
-tested.
+The initial neural-network foundation has now been implemented,
+trained, and independently gradient-verified.
 
-## Completed Milestone
+## Completed Milestones
+
+### Neural Network Foundation
 
 ```text
 Multiple Inputs
@@ -1029,6 +1037,48 @@ The current implementation supports:
 - Backward propagation through multiple layers
 - Network-level training through `Trainer`
 - Gradient-based updates for every weight and bias
+
+### Gradient Verification
+
+The gradient-checking milestone is now complete.
+
+```text
+GradientChecker
+      ↓
+Neuron
+ ├── weight[0] ✓
+ ├── weight[1] ✓
+ └── bias      ✓
+      ↓
+Layer
+ ├── input[0]  ✓
+ └── input[1]  ✓
+      ↓
+Network
+ ├── input[0]  ✓
+ └── input[1]  ✓
+```
+
+The implementation uses numerical gradients as an independent
+verification path:
+
+```text
+Analytical gradient
+        vs
+Numerical gradient
+```
+
+Numerical gradients use the central-difference approximation:
+
+```text
+f(x + ε) - f(x - ε)
+-------------------
+        2ε
+```
+
+This verifies that the backward propagation implemented by the Neuron,
+Layer, and Network produces gradients consistent with the observed
+change in loss.
 
 ## Current Experiments
 
@@ -1105,9 +1155,7 @@ Layer 1
 Input Gradient
 ```
 
-The experiment currently validates the mathematical flow. The next step
-is to use the same architecture for a complete multi-layer training
-experiment.
+The experiment validates the multi-layer mathematical flow.
 
 ## Test Status
 
@@ -1116,36 +1164,33 @@ The core implementation is covered by automated tests.
 Current validated areas:
 
 ```text
-Activation      ✓
-Neuron          ✓
-Layer           ✓
-Network         ✓
-Loss            ✓
-Optimizer       ✓
-Trainer         ✓
-Multi-layer     ✓
+Activation            ✓
+Neuron                ✓
+Layer                 ✓
+Network               ✓
+Loss                  ✓
+Optimizer             ✓
+Trainer               ✓
+Multi-layer           ✓
+Gradient checking     ✓
 ```
 
-The full test suite currently passes with:
-
-```text
-28 passed
-```
+The full test suite is passing after the gradient-checking milestone.
 
 ## Current Architecture
 
 ```text
-                 Network
-                    │
-          ┌─────────┴─────────┐
-          ↓                   ↓
-       Layer 1             Layer 2
-          ↓                   ↓
-      Neurons              Neurons
-          ↓                   ↓
-       ReLU                 ReLU
-          │                   │
-          └───────→───────────┘
+                         Network
+                            │
+                ┌───────────┴───────────┐
+                ↓                       ↓
+             Layer 1                 Layer 2
+                ↓                       ↓
+             Neurons                  Neurons
+                ↓                       ↓
+             ReLU                    ReLU
+                │                       │
+                └──────────→────────────┘
 ```
 
 Training flow:
@@ -1172,10 +1217,30 @@ GradientDescent
 Updated Weights + Biases
 ```
 
+Gradient verification flow:
+
+```text
+Model Input
+    │
+    ├──────────────→ Analytical Gradient
+    │                       │
+    │                  backward()
+    │
+    └──────────────→ Numerical Gradient
+                            │
+                       perturb input
+                       calculate loss
+                            │
+                            ↓
+                       GradientChecker
+                            │
+                            ↓
+                         Compare
+```
+
 ## Next Immediate Step
 
-Before moving to tokenization, the project should complete the
-multi-layer training experiment.
+The next milestone is a complete multi-layer training experiment.
 
 Goal:
 
@@ -1199,9 +1264,22 @@ Update both layers
 Lower loss
 ```
 
-After that milestone, continue toward character-level language modeling.
+After that milestone, move into the language-model phase:
 
----
+```text
+Character Vocabulary
+        ↓
+Character Token IDs
+        ↓
+Training Sequences
+        ↓
+Next-Character Prediction
+        ↓
+Character-Level Language Model
+```
+
+This will be the first direct bridge from the verified neural-network
+engine to an actual language-model objective.
 
 # 25. Suggested Git Commit Sequence
 
@@ -1222,12 +1300,21 @@ feat: integrate network training
 docs: document multi-layer neural network architecture
 ```
 
-For the current Feature 05 milestone, keep implementation and
-documentation commits separate when practical:
+For completed milestones, keep implementation and documentation
+commits separate when practical.
+
+For the multi-layer network:
 
 ```text
 feat: implement multi-layer neural network training
 docs: document multi-layer neural network architecture
+```
+
+For gradient verification:
+
+```text
+feat: add gradient checking
+docs: document gradient verification
 ```
 
 ## Final Direction

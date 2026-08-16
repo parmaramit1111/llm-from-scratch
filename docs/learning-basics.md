@@ -790,13 +790,40 @@ Trainer
     ✅ Multiple weights
     ✅ Multiple layers
     ✅ Weight and bias updates
+
+Gradient Checking
+    ✅ Neuron weight gradients
+    ✅ Neuron bias gradients
+    ✅ Layer input gradients
+    ✅ Network input gradients
+    ✅ Analytical vs numerical verification
 ```
 
-The full test suite currently contains **28 passing tests**.
+The full test suite is passing after the gradient-checking milestone.
+
+Gradient checking uses numerical finite differences as an independent
+verification path:
+
+```text
+Analytical gradient
+        vs
+Numerical gradient
+```
+
+Using a small value `ε`, the numerical gradient is approximated as:
+
+```text
+f(x + ε) - f(x - ε)
+-------------------
+        2ε
+```
+
+This gives us an independent way to verify that our backpropagation
+implementation is calculating gradients correctly.
 
 This is an important milestone because the project has moved from
-explaining the learning loop to actually implementing that loop from
-first principles.
+explaining the learning loop to actually implementing and independently
+verifying that learning loop from first principles.
 
 ---
 
@@ -853,9 +880,14 @@ successfully carried gradients from Layer 2 back through Layer 1.
 The next step is to turn this into a full multi-layer training
 experiment and observe both layers learning together.
 
+Before moving to language-model concepts, we have also completed
+gradient verification from Neuron through Layer and Network.
+
 ---
 
 # 17. What Comes Next
+
+The gradient-verification milestone is now complete.
 
 The immediate next milestone is:
 
@@ -885,7 +917,8 @@ Update both layers
 Repeat
 ```
 
-After that, we can move toward the language-model-specific concepts:
+After the multi-layer training experiment, we can move toward the
+language-model-specific concepts:
 
 ```text
 Character Prediction
