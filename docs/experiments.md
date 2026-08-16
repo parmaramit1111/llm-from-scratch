@@ -635,11 +635,8 @@ The training tests verify:
 - Multiple neuron updates
 - Multiple-layer parameter updates
 
-The complete test suite currently contains:
-
-```text
-28 passed
-```
+The complete test suite is passing after the gradient-checking
+milestone.
 
 ## Major Learning
 
@@ -778,7 +775,7 @@ Performance still depends on:
 
 ## Experiment 11 --- Numerical Gradient Check
 
-**Status:** Planned
+**Status:** Completed
 
 Verify analytical gradients against numerical gradients:
 
@@ -793,6 +790,21 @@ f(x + ε) - f(x - ε)
 Gradient checking gives us an independent way to validate
 backpropagation.
 
+We verified analytical gradients against numerical gradients at three
+levels:
+
+```text
+Neuron → Layer → Network
+```
+
+The numerical gradient uses central finite differences:
+
+```text
+f(x + ε) - f(x - ε)
+-------------------
+        2ε
+```
+
 ### Important Exception
 
 Numerical gradient checking is primarily a debugging/verification tool.
@@ -801,7 +813,8 @@ computationally expensive.
 
 ### Short Summary
 
-> Use numerical gradients to verify our analytical gradients.
+> Numerical gradient checking independently verifies that our analytical
+> backpropagation gradients are correct.
 
 ---
 
@@ -1315,6 +1328,7 @@ Completed:
 07 — Layer Gradient Aggregation   ✅
 08 — Network / Multiple Layers    ✅
 09 — Network-Based Training       ✅
+11 — Numerical Gradient Check     ✅
 ```
 
 In progress:
