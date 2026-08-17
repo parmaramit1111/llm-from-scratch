@@ -22,14 +22,30 @@ During backpropagation:
 """
 
 class Activation:
-    """Apply ReLU activation and calculate its gradient."""
+    """
+    Apply a configured activation function and calculate its gradient.
 
-    def __init__(self):
+    Supported activations:
+
+        ReLU:
+            forward(x)  = max(0, x)
+            backward    = 1 when x > 0, otherwise 0
+
+        Linear:
+            forward(x)  = x
+            backward    = 1
+    """
+
+    def __init__(self, name: str = "relu"):
+        self.name = name
         self.raw_input = 0.0
 
     def forward(self, raw_input: float) -> float:
-        """Apply ReLU to the raw neuron output."""
+        """Apply the configured activation to the raw neuron output."""
         self.raw_input = raw_input
+
+        if self.name == "linear":
+            return raw_input
 
         if raw_input > 0:
             return raw_input
@@ -37,7 +53,10 @@ class Activation:
         return 0.0
 
     def backward(self, gradient: float) -> float:
-        """Propagate the gradient through ReLU."""
+        """Propagate the gradient through the configured activation."""
+        if self.name == "linear":
+            return gradient
+
         if self.raw_input > 0:
             return gradient
 
