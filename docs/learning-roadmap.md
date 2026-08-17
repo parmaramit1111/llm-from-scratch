@@ -1129,6 +1129,35 @@ weight = 2
 bias   = 0
 ```
 
+### `06_multi_layer_training.py`
+
+Demonstrates complete end-to-end training through multiple layers:
+
+```text
+Input
+  ↓
+Layer 1 → ReLU
+  ↓
+Layer 2 → Linear
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Backpropagation
+  ↓
+Update both layers
+```
+
+The experiment learns:
+
+```text
+y = 2 × x + 1
+```
+
+The training loss converges to approximately zero and the final
+predictions match all training targets.
+
 ### `05_multiple_layers.py`
 
 Demonstrates forward and backward propagation through two layers:
@@ -1188,7 +1217,7 @@ The full test suite is passing after the gradient-checking milestone.
                 ↓                       ↓
              Neurons                  Neurons
                 ↓                       ↓
-             ReLU                    ReLU
+             ReLU                 Linear Output
                 │                       │
                 └──────────→────────────┘
 ```
@@ -1240,9 +1269,9 @@ Model Input
 
 ## Next Immediate Step
 
-The next milestone is a complete multi-layer training experiment.
+The multi-layer training milestone is now complete.
 
-Goal:
+The completed experiment demonstrated:
 
 ```text
 Input
@@ -1264,7 +1293,7 @@ Update both layers
 Lower loss
 ```
 
-After that milestone, move into the language-model phase:
+The next phase is the first direct language-model objective:
 
 ```text
 Character Vocabulary

@@ -70,3 +70,18 @@ def test_activation_zero_gradient():
     final_gradient = activation.backward(3.0)
 
     assert final_gradient == 0.0
+
+def test_linear_activation_forward():
+    """A linear activation should return the raw input unchanged."""
+    activation = Activation("linear")
+
+    assert activation.forward(-3.0) == -3.0
+    assert activation.forward(5.0) == 5.0
+
+def test_linear_activation_backward():
+    """A linear activation should pass gradients unchanged."""
+    activation = Activation("linear")
+
+    activation.forward(-3.0)
+
+    assert activation.backward(7.0) == 7.0

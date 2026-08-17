@@ -684,7 +684,7 @@ its own behavior.
 
 # Experiment 10 --- Multi-Layer Training Experiment
 
-**Status:** In Progress
+**Status:** Completed
 
 ## Objective
 
@@ -723,31 +723,82 @@ Update Layer 2
 Update Layer 1
 ```
 
-## Current Progress
+## Result
 
-The forward and backward behavior of a two-layer network has already
-been verified.
-
-The next step is to run a complete training experiment and observe:
+A two-layer network successfully learned the relationship:
 
 ```text
-Initial Loss
-      ↓
-Training
-      ↓
-Lower Loss
-      ↓
-Updated Layer 1 parameters
-      ↓
-Updated Layer 2 parameters
+y = 2 × x + 1
 ```
+
+using:
+
+```text
+Layer 1 → 2 neurons → ReLU
+Layer 2 → 1 neuron  → Linear
+```
+
+Training loss converged:
+
+```text
+Epoch 100  | Loss: 0.080190
+Epoch 200  | Loss: 0.002423
+Epoch 300  | Loss: 0.000070
+Epoch 400  | Loss: 0.000002
+Epoch 500  | Loss: 0.000000
+```
+
+The final predictions matched all training targets:
+
+```text
+Input   Target   Prediction
+---------------------------
+-2.0    -3.0     -3.0000
+-1.0    -1.0     -1.0000
+ 0.0     1.0      1.0000
+ 1.0     3.0      3.0000
+ 2.0     5.0      5.0000
+ 3.0     7.0      7.0000
+```
+
+Both layers learned new parameter values during training.
 
 ## Major Learning
 
-This experiment will demonstrate the central idea behind deep learning:
+This experiment demonstrated end-to-end multi-layer learning.
 
-> An error at the final output can influence parameters throughout
-> earlier layers through backpropagation.
+The complete flow is:
+
+```text
+Input
+  ↓
+Layer 1
+  ↓
+ReLU
+  ↓
+Layer 2
+  ↓
+Linear Output
+  ↓
+Loss
+  ↓
+Network.backward()
+  ↓
+Layer 2 gradients
+  ↓
+Layer 1 gradients
+  ↓
+Gradient Descent
+  ↓
+Updated parameters
+```
+
+The hidden layer learned an internal representation without being given
+explicit instructions about what each hidden neuron should represent.
+
+The learned parameters do not need to match a manually derived solution.
+Different parameter combinations can represent the same target
+relationship.
 
 ## Important Exception
 
@@ -766,8 +817,9 @@ Performance still depends on:
 
 ## Short Summary
 
-> The architecture for multi-layer learning is complete; the remaining
-> task is to demonstrate end-to-end learning through multiple layers.
+> A complete two-layer network successfully learned a target relationship
+> end-to-end, proving that gradients can flow through multiple layers and
+> update parameters throughout the network.
 
 ---
 
@@ -1328,19 +1380,19 @@ Completed:
 07 — Layer Gradient Aggregation   ✅
 08 — Network / Multiple Layers    ✅
 09 — Network-Based Training       ✅
+10 — Multi-Layer Training         ✅
 11 — Numerical Gradient Check     ✅
 ```
 
-In progress:
+Current phase:
 
 ```text
-10 — Multi-Layer Training         🔄
+12 — Character Prediction        → Next
 ```
 
 Planned:
 
 ```text
-11 — Numerical Gradient Check
 12 — Character Prediction
 13 — Character Tokenizer
 14 — Embeddings
@@ -1535,12 +1587,11 @@ Network
 Network-Based Training
 ```
 
-The **next immediate goal** is to complete Experiment 10 by training the
-two-layer network end-to-end and observing both layers learn from the
-final loss.
+The **next immediate goal** is Experiment 12: move from numerical
+relationships to character-level language modeling.
 
-After that, we will make the major conceptual transition from numerical
-learning to language:
+We will make the major conceptual transition from numerical learning to
+language:
 
 ```text
 Character Prediction
