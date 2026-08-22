@@ -823,11 +823,11 @@ Performance still depends on:
 
 ---
 
-# Future Experiments
-
-## Experiment 11 --- Numerical Gradient Check
+# Experiment 11 --- Numerical Gradient Check
 
 **Status:** Completed
+
+## Objective
 
 Verify analytical gradients against numerical gradients:
 
@@ -837,143 +837,446 @@ f(x + ε) - f(x - ε)
         2ε
 ```
 
-### Major Learning
+## Result
 
-Gradient checking gives us an independent way to validate
-backpropagation.
-
-We verified analytical gradients against numerical gradients at three
-levels:
+Gradient checking was applied across the neural-network foundation:
 
 ```text
 Neuron → Layer → Network
 ```
 
-The numerical gradient uses central finite differences:
+The analytical gradients matched the numerical gradients within the
+configured tolerance.
 
-```text
-f(x + ε) - f(x - ε)
--------------------
-        2ε
-```
+## Major Learning
 
-### Important Exception
+Gradient checking gives us an independent way to verify that our
+backpropagation implementation is mathematically correct.
 
-Numerical gradient checking is primarily a debugging/verification tool.
-It is not how we will train the final model because it is
-computationally expensive.
+## Important Exception
 
-### Short Summary
+Numerical gradient checking is a verification/debugging technique. It is
+not practical as the training mechanism because it requires many extra
+forward passes.
 
-> Numerical gradient checking independently verifies that our analytical
-> backpropagation gradients are correct.
+## Short Summary
 
----
-
-# Experiment 12 --- Character Prediction
-
-**Status:** Planned
-
-Move from numerical relationships to text.
-
-Example:
-
-```text
-Input → Target
-
-h     → e
-he    → l
-hel   → l
-hell  → o
-```
-
-### Major Learning
-
-The same prediction → loss → gradient → update loop can be applied to
-language data.
-
-### Important Exception
-
-Text must first be represented numerically before our neural network can
-process it.
-
-### Short Summary
-
-> The next major transition is from numeric data to language data.
+> Numerical gradient checking independently validates analytical
+> backpropagation gradients.
 
 ---
 
-# Experiment 13 --- Character Tokenizer
+# Experiment 12 --- Character Language Model Foundation
 
-**Status:** Planned
+**Status:** Completed
 
-Convert text into numerical representations:
+## Objective
 
-```text
-"hello"
-   ↓
-[7, 4, 11, 11, 14]
-```
+Move from numerical relationships to character-level language modeling.
 
-and decode back:
+The first language-model pipeline introduced:
 
 ```text
-[7, 4, 11, 11, 14]
-   ↓
-"hello"
+Text
+  ↓
+Vocabulary
+  ↓
+Character IDs
+  ↓
+Next-Character Dataset
+  ↓
+Network
+  ↓
+Logits
+  ↓
+Softmax + Cross Entropy
+  ↓
+Backpropagation
+  ↓
+Gradient Descent
 ```
 
-### Major Learning
+## Result
 
-Tokenization converts language into discrete numerical units that a
-model can process.
+The first character prediction experiment successfully learned the
+unambiguous mappings:
 
-### Important Exception
+```text
+h → e
+e → l
+```
 
-Token IDs themselves are categorical identifiers. The numeric distance
-between IDs does not represent semantic similarity.
+but could not uniquely solve:
 
-### Short Summary
+```text
+l → l
+l → o
+```
 
-> Tokenization creates the numerical vocabulary used by the model.
+because the same input character had two different targets.
+
+## Major Learning
+
+A model cannot produce different predictions for identical input without
+additional information.
+
+This exposed the need for context.
+
+## Important Exception
+
+The limitation was not caused by a broken optimizer or failed
+backpropagation. The input representation itself did not contain enough
+information.
+
+## Short Summary
+
+> The first character model proved that the neural-network training
+> pipeline can be applied to language, while exposing the need for
+> contextual information.
 
 ---
 
-# Experiment 14 --- Embeddings
+# Experiment 13 --- Context Prediction
 
-**Status:** Planned
+**Status:** Completed
 
-Convert token IDs into learned vectors:
+## Objective
+
+Provide multiple previous characters as context for next-character
+prediction.
+
+For:
+
+```text
+hello
+```
+
+with:
+
+```text
+context_size = 2
+```
+
+the dataset becomes:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+## Result
+
+The model learned all three examples with very high confidence.
+
+Final loss:
+
+```text
+0.009361
+```
+
+Predictions:
+
+```text
+Input   Target   Prediction
+---------------------------
+he      l        l
+el      l        l
+ll      o        o
+```
+
+Final probabilities were approximately:
+
+```text
+he → l    99.8898%
+el → l    98.5324%
+ll → o    98.8142%
+```
+
+## Major Learning
+
+Adding context resolves the ambiguity that existed in the one-character
+model.
+
+Instead of:
+
+```text
+l → ?
+```
+
+the model can distinguish:
+
+```text
+el → l
+ll → o
+```
+
+## Important Exception
+
+The model is still receiving raw token IDs such as:
+
+```text
+h → 0
+e → 1
+l → 2
+o → 3
+```
+
+Those IDs are categorical identifiers, not meaningful continuous
+representations.
+
+## Short Summary
+
+> Context provides information that allows the model to distinguish
+> different occurrences of the same character.
+
+---
+
+# Experiment 14 --- Embedding
+
+**Status:** Completed
+
+## Objective
+
+Replace raw token IDs with learnable vector representations.
+
+The embedding matrix maps:
 
 ```text
 Token ID
    ↓
-Embedding Matrix
+Learned Vector
+```
+
+For this experiment:
+
+```text
+Vocabulary size = 4
+Embedding size  = 3
+```
+
+## Implementation
+
+The `Embedding` component provides:
+
+```text
+forward()
+backward()
+```
+
+Forward performs a row lookup:
+
+```text
+token ID
    ↓
-Vector
+embedding matrix row
+   ↓
+vector
+```
+
+Backward accumulates gradients into the embedding rows used by the
+current input.
+
+Repeated token IDs accumulate their gradient contributions into the same
+embedding row.
+
+## Verification
+
+Embedding tests verify:
+
+- Forward vector lookup
+- Correct row selection
+- Backward gradient accumulation
+- Repeated-token gradient accumulation
+- Embedding weight gradient checking
+
+The embedding gradient was independently compared with a numerical
+gradient and passed within the configured tolerance.
+
+## Embedded Sequence
+
+`EmbeddedSequence` was added as a small adapter:
+
+```text
+Token IDs
+   ↓
+Embedding
+   ↓
+Vectors
+   ↓
+Flatten
+   ↓
+Existing Network
+```
+
+Its backward path reshapes the network input gradients and passes them
+back into the embedding.
+
+## Language Trainer Integration
+
+`LanguageTrainer` was extended so that an optional embedding can
+participate in the same training step.
+
+The complete flow is now:
+
+```text
+Token IDs
+   ↓
+Embedding
+   ↓
+Flattened Vectors
+   ↓
+Network
+   ↓
+Logits
+   ↓
+SoftmaxCrossEntropy
+   ↓
+Loss
+   ↓
+Network.backward()
+   ↓
+Embedding.backward()
+   ↓
+Update Network Parameters
+   ↓
+Update Embedding Parameters
+```
+
+A focused integration test verifies that one training step changes both
+network and embedding parameters.
+
+## Embedded Context Experiment
+
+The embedded context model was trained on:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+Training loss improved from:
+
+```text
+0.010942
+```
+
+at epoch 100 to:
+
+```text
+0.000591
+```
+
+at epoch 1000.
+
+Final predictions:
+
+```text
+Input   Target   Prediction
+---------------------------
+he      l        l
+el      l        l
+ll      o        o
+```
+
+Final probabilities were approximately:
+
+```text
+he → l    99.9388%
+el → l    99.9493%
+ll → o    99.9347%
+```
+
+## Embedding Learning
+
+The embedding vectors changed during training.
+
+For example:
+
+```text
+Initial "l":
+[0.098972, 0.048634, -0.081232]
+
+Final "l":
+[-0.301591, -1.567778, 1.092344]
+```
+
+This demonstrates that the vectors are trainable parameters rather than
+fixed token representations.
+
+The `"o"` embedding did not change in this experiment because `"o"`,
+although present as a target, was never used as an input token.
+
+## Major Learning
+
+Embeddings allow the model to learn continuous representations of
+discrete tokens.
+
+The representations are learned indirectly through the prediction
+objective.
+
+## Important Exception
+
+Embedding dimensions should not be interpreted as individually
+human-readable concepts. Their useful structure emerges from training.
+
+## Short Summary
+
+> The model can now learn the representation of input tokens itself
+> rather than treating token IDs as ordinary numerical features.
+
+---
+
+# Future Experiments
+
+## Experiment 15 --- Improved Character Language Model
+
+**Status:** Next
+
+Use the embedding-based context model as the foundation for a more
+complete character language model.
+
+The immediate goal is to move beyond the tiny `"hello"` demonstration
+while keeping the architecture understandable.
+
+Potential progression:
+
+```text
+Text
+ ↓
+Vocabulary
+ ↓
+Sequence Dataset
+ ↓
+Token Embeddings
+ ↓
+Context Representation
+ ↓
+Network
+ ↓
+Logits
+ ↓
+Softmax + Cross Entropy
 ```
 
 ### Major Learning
 
-Embeddings give the model a learnable continuous representation of
-tokens.
-
-### Important Exception
-
-An embedding is not inherently a dictionary definition. Its meaning
-emerges from how it is learned from context.
+Observe how the learned embedding and context representation behave when
+the dataset contains more character sequences.
 
 ### Short Summary
 
-> Embeddings turn discrete tokens into learnable vectors.
+> Move from the minimal embedding demonstration toward a more complete
+> character-level language-model training setup.
 
 ---
 
-# Experiment 15 --- Self-Attention
+## Experiment 16 --- Self-Attention
 
 **Status:** Planned
 
-Implement single-head self-attention:
+Implement a small single-head self-attention mechanism:
 
 ```text
 Embeddings
@@ -989,25 +1292,26 @@ Context Representation
 
 ### Major Learning
 
-Attention allows the model to dynamically determine which parts of the
-input are important to the current representation.
+Attention allows information from different positions in a sequence to
+interact dynamically.
 
 ### Important Exception
 
-Attention is not simply a lookup table. The attention weights are
-calculated from the current representations.
+Attention weights are calculated from the current representations; they
+are not fixed lookup values.
 
 ### Short Summary
 
-> Attention allows information from different positions to interact.
+> Attention allows the model to determine which parts of the context are
+> important for each position.
 
 ---
 
-# Experiment 16 --- Multi-Head Attention
+## Experiment 17 --- Multi-Head Attention
 
 **Status:** Planned
 
-Extend self-attention to multiple heads.
+Extend self-attention to multiple heads:
 
 ```text
 Input
@@ -1022,25 +1326,26 @@ Combine
 
 ### Major Learning
 
-Different attention heads can learn different relationships or patterns.
+Multiple attention heads allow the model to learn different interaction
+patterns in parallel.
 
 ### Important Exception
 
-More heads do not automatically mean a better model. The number of heads
-must work with the model dimension and architecture.
+More heads do not automatically mean a better model. Head count must be
+compatible with the model dimension and architecture.
 
 ### Short Summary
 
-> Multi-head attention lets the model learn several attention patterns
-> in parallel.
+> Multi-head attention lets several attention patterns be learned in
+> parallel.
 
 ---
 
-# Experiment 17 --- Transformer Block
+## Experiment 18 --- Transformer Block
 
 **Status:** Planned
 
-Build:
+Build a reusable Transformer block:
 
 ```text
 Input
@@ -1062,22 +1367,17 @@ Output
 
 ### Major Learning
 
-A Transformer block combines attention with residual connections and
-feed-forward computation into a reusable building block.
-
-### Important Exception
-
-Removing or changing components such as residual connections or
-normalization can significantly affect training behavior.
+A Transformer block combines attention, residual connections,
+normalization, and feed-forward computation.
 
 ### Short Summary
 
-> A Transformer block combines several core neural-network mechanisms
-> into one reusable unit.
+> A Transformer block combines the core mechanisms required for a
+> Transformer language model.
 
 ---
 
-# Experiment 18 --- Tiny Transformer
+## Experiment 19 --- Tiny Transformer
 
 **Status:** Planned
 
@@ -1086,7 +1386,7 @@ Stack Transformer blocks:
 ```text
 Text
  ↓
-Tokenizer
+Vocabulary
  ↓
 Token IDs
  ↓
@@ -1105,22 +1405,21 @@ Next Token
 
 ### Major Learning
 
-This connects the individual concepts into a language-model
-architecture.
+Connect the individual components into a small Transformer architecture.
 
 ### Important Exception
 
-A tiny Transformer is educational. Its size and dataset will be far
-below production LLM scale.
+This will remain an educational model and will be far smaller than a
+production LLM.
 
 ### Short Summary
 
-> The Transformer combines our earlier concepts into a language model
-> architecture.
+> The Transformer combines our previously implemented components into a
+> complete language-model architecture.
 
 ---
 
-# Experiment 19 --- Tiny Language Model
+## Experiment 20 --- Tiny Language Model
 
 **Status:** Planned
 
@@ -1141,21 +1440,22 @@ Generation examples
 
 ### Major Learning
 
-Observe how a complete language model behaves during training.
+Observe how a complete language model behaves during training and
+generation.
 
 ### Important Exception
 
-Low training loss does not automatically mean good language generation
-or generalization.
+Low training loss does not automatically imply useful language
+generation or generalization.
 
 ### Short Summary
 
-> A complete tiny LLM lets us connect the theory to actual text
-> generation.
+> A complete tiny language model connects the individual mechanisms to
+> actual text generation.
 
 ---
 
-# Experiment 20 --- Sampling
+## Experiment 21 --- Sampling
 
 **Status:** Planned
 
@@ -1170,13 +1470,12 @@ Top-P
 
 ### Major Learning
 
-Generation is a probability-selection process rather than simply
-selecting the highest-scoring token every time.
+Generation converts probability distributions into token choices.
 
 ### Important Exception
 
-Sampling parameters affect creativity, diversity, and consistency; there
-is no universally best setting.
+Sampling parameters affect diversity and consistency; there is no
+universally best setting.
 
 ### Short Summary
 
@@ -1184,7 +1483,7 @@ is no universally best setting.
 
 ---
 
-# Experiment 21 --- Overfitting
+## Experiment 22 --- Overfitting
 
 **Status:** Planned
 
@@ -1202,8 +1501,7 @@ generalize.
 
 ### Important Exception
 
-Low training loss alone is not sufficient evidence that the model has
-learned a useful representation.
+Low training loss alone is not sufficient evidence of generalization.
 
 ### Short Summary
 
@@ -1211,7 +1509,7 @@ learned a useful representation.
 
 ---
 
-# Experiment 22 --- NumPy Comparison
+## Experiment 23 --- NumPy Comparison
 
 **Status:** Planned
 
@@ -1227,7 +1525,7 @@ Implementation complexity
 
 ### Major Learning
 
-Understand why numerical libraries are useful for vectorized
+Understand why optimized numerical libraries are useful for vectorized
 computation.
 
 ### Important Exception
@@ -1236,12 +1534,12 @@ Optimization should follow measurement rather than assumptions.
 
 ### Short Summary
 
-> NumPy shows how optimized numerical operations change the
-> implementation and performance.
+> NumPy shows how optimized numerical operations affect implementation
+> and performance.
 
 ---
 
-# Experiment 23 --- PyTorch Comparison
+## Experiment 24 --- PyTorch Comparison
 
 **Status:** Planned
 
@@ -1250,21 +1548,22 @@ Implement the same basic model using PyTorch.
 ### Major Learning
 
 Understand what tensors, automatic differentiation, and optimized
-training frameworks provide.
+training frameworks provide after implementing the underlying concepts
+ourselves.
 
 ### Important Exception
 
-The framework should be introduced after understanding the underlying
-mathematics, not used as a replacement for understanding it.
+The framework should complement understanding of the mathematics rather
+than replace it.
 
 ### Short Summary
 
-> PyTorch should make more sense after we have already built the
-> fundamentals ourselves.
+> PyTorch should make more sense after the underlying mechanisms have
+> already been built from scratch.
 
 ---
 
-# Experiment 24 --- C++ Implementation
+## Experiment 25 --- C++ Implementation
 
 **Status:** Future
 
@@ -1290,8 +1589,8 @@ Understand lower-level performance and memory behavior.
 
 ### Important Exception
 
-C++ is not automatically faster for every workload; the implementation
-and workload matter.
+C++ is not automatically faster for every workload; implementation and
+workload matter.
 
 ### Short Summary
 
@@ -1300,7 +1599,7 @@ and workload matter.
 
 ---
 
-# Experiment 25 --- Rust Implementation
+## Experiment 26 --- Rust Implementation
 
 **Status:** Future
 
@@ -1331,7 +1630,7 @@ The goal is learning and comparison, not replacing Python everywhere.
 
 ---
 
-# Experiment 26 --- GPU Exploration
+## Experiment 27 --- GPU Exploration
 
 **Status:** Future
 
@@ -1371,74 +1670,68 @@ workload size and data-transfer overhead matter.
 Completed:
 
 ```text
-01 — Linear Learning              ✅
-02 — Linear Model Limitation      ✅
-03 — Bias                         ✅
-04 — Multiple Neurons             ✅
-05 — Activation / ReLU            ✅
-06 — Multi-Input Neuron           ✅
-07 — Layer Gradient Aggregation   ✅
-08 — Network / Multiple Layers    ✅
-09 — Network-Based Training       ✅
-10 — Multi-Layer Training         ✅
-11 — Numerical Gradient Check     ✅
+01 — Linear Learning                  ✅
+02 — Linear Model Limitation          ✅
+03 — Bias                             ✅
+04 — Multiple Neurons                 ✅
+05 — Activation / ReLU                ✅
+06 — Multi-Input Neuron               ✅
+07 — Layer Gradient Aggregation       ✅
+08 — Network / Multiple Layers        ✅
+09 — Network-Based Training           ✅
+10 — Multi-Layer Training             ✅
+11 — Numerical Gradient Check         ✅
+12 — Character Language Model         ✅
+13 — Context Prediction               ✅
+14 — Embedding                        ✅
 ```
 
-Current phase:
+Next:
 
 ```text
-12 — Character Prediction        → Next
+15 — Improved Character Language Model
 ```
 
 Planned:
 
 ```text
-12 — Character Prediction
-13 — Character Tokenizer
-14 — Embeddings
-15 — Self-Attention
-16 — Multi-Head Attention
-17 — Transformer Block
-18 — Tiny Transformer
-19 — Tiny Language Model
-20 — Sampling
-21 — Overfitting
-22 — NumPy Comparison
-23 — PyTorch Comparison
+16 — Self-Attention
+17 — Multi-Head Attention
+18 — Transformer Block
+19 — Tiny Transformer
+20 — Tiny Language Model
+21 — Sampling
+22 — Overfitting
+23 — NumPy Comparison
+24 — PyTorch Comparison
 ```
 
 Future systems track:
 
 ```text
-24 — C++ Implementation
-25 — Rust Implementation
-26 — GPU Exploration
+25 — C++ Implementation
+26 — Rust Implementation
+27 — GPU Exploration
 ```
 
 ---
 
 # Current Architecture
 
-The project has evolved into:
+The project has now evolved into two related paths.
+
+## Numeric / General Network Path
 
 ```text
 Input Vector
       ↓
 Network
       ↓
-Layer 1
+Layer(s)
       ↓
 Neuron(s)
       ↓
-Weighted Sum + Bias
-      ↓
 Activation
-      ↓
-Layer Output
-      ↓
-Layer 2
-      ↓
-...
       ↓
 Prediction
       ↓
@@ -1449,6 +1742,34 @@ Backpropagation
 Gradient Descent
       ↓
 Updated Parameters
+```
+
+## Language Model Path
+
+```text
+Text
+ ↓
+Vocabulary
+ ↓
+Token IDs
+ ↓
+Sequence Dataset
+ ↓
+Embedding
+ ↓
+Flattened Context Vectors
+ ↓
+Network
+ ↓
+Logits
+ ↓
+SoftmaxCrossEntropy
+ ↓
+Backpropagation
+ ↓
+Update Network Parameters
+ +
+Update Embedding Parameters
 ```
 
 Component responsibilities:
@@ -1469,8 +1790,17 @@ Network
 Loss
   → measures prediction error
 
+SoftmaxCrossEntropy
+  → converts logits into classification loss and gradients
+
+Embedding
+  → maps token IDs to learnable vectors
+
+EmbeddedSequence
+  → adapts embedding vectors to the existing network input format
+
 Optimizer
-  → updates parameters
+  → updates trainable parameters
 
 Trainer
   → coordinates the learning cycle
@@ -1480,98 +1810,102 @@ Trainer
 
 # Major Milestone
 
-The project has moved beyond a single-neuron demonstration.
+The project has moved from a basic neural-network implementation to a
+working **character-level language-model foundation**.
 
-We now have a **tested, multi-input, multi-neuron, multi-layer training
-architecture** implemented from first principles.
-
-The complete test suite currently contains:
+We have now demonstrated:
 
 ```text
-28 passed
+Tokenization
+     ↓
+Context
+     ↓
+Embedding
+     ↓
+Prediction
+     ↓
+Loss
+     ↓
+Backpropagation
+     ↓
+Embedding + Network Updates
 ```
 
-The most important architectural transition was:
+The embedded experiment demonstrated that the representation itself can
+change during training:
 
 ```text
-Single Neuron
+Initial embedding
       ↓
-Layer
+Training
       ↓
-Network
-      ↓
-Network-Based Trainer
+Updated embedding
 ```
 
-This gives us the foundation required for the next major transition:
+For the `"hello"` experiment:
 
 ```text
-Numeric Learning
-      ↓
-Language Learning
-      ↓
-Tokenizer
-      ↓
-Embeddings
-      ↓
-Attention
-      ↓
-Transformer
-      ↓
-Tiny LLM
+Initial "l":
+[0.098972, 0.048634, -0.081232]
+
+Final "l":
+[-0.301591, -1.567778, 1.092344]
 ```
+
+while `"o"` remained unchanged because it was only used as a target and
+was never part of an input context.
+
+This is an important distinction:
+
+> The embedding matrix is part of the model's trainable parameters.
 
 ---
 
-# Exceptions and Important Lessons So Far
+# Important Lessons So Far
 
-Several important lessons have already emerged:
+1. **More epochs do not fix an architecture that cannot represent the
+   target relationship.**
 
-1.  **More epochs do not fix an architecture that cannot represent the
-    target relationship.**
+2. **More neurons do not automatically make a model deep.** Depth comes
+   from stacking layers.
 
-2.  **More neurons do not automatically make a model deep.** Depth comes
-    from stacking layers.
+3. **Linear layers without non-linear activation remain effectively
+   linear.**
 
-3.  **Linear layers without non-linear activation remain effectively
-    linear.**
+4. **ReLU can block gradients when its raw input is not positive.**
 
-4.  **ReLU can block gradients when its raw input is not positive.**
+5. **Input and weight dimensions must match.**
 
-5.  **Input and weight dimensions must match.**
+6. **Backward propagation must process layers in reverse order.**
 
-6.  **Backward propagation must process layers in reverse order.**
+7. **The Trainer should coordinate components rather than duplicate their
+   mathematical logic.**
 
-7.  **The Trainer should coordinate components rather than duplicate
-    their mathematical logic.**
+8. **Identical inputs with conflicting targets expose a lack of context,
+   not necessarily a training failure.**
 
-8.  **Low loss is not always sufficient evidence of useful learning.**
-    Generalization will become important later.
+9. **Context gives the model additional information needed to distinguish
+   different occurrences of the same token.**
+
+10. **Token IDs are categorical identifiers, not meaningful continuous
+    representations.**
+
+11. **Embeddings provide learnable continuous representations of tokens.**
+
+12. **Only embedding rows used by an input context receive gradients for
+    that training example.**
+
+13. **Repeated token IDs must accumulate their gradient contributions into
+    the same embedding row.**
+
+14. **Low training loss alone does not guarantee useful language
+    generation or generalization.**
 
 ---
 
 # Short Summary
 
-So far, the project has demonstrated the complete fundamental learning
-mechanism:
-
-```text
-Input
-  ↓
-Prediction
-  ↓
-Loss
-  ↓
-Gradient
-  ↓
-Backpropagation
-  ↓
-Parameter Update
-  ↓
-Better Prediction
-```
-
-We then expanded that mechanism:
+The project has progressed through:
 
 ```text
 Neuron
@@ -1584,26 +1918,32 @@ Multiple Layers
   ↓
 Network
   ↓
-Network-Based Training
+Training
+  ↓
+Gradient Checking
+  ↓
+Character Prediction
+  ↓
+Context
+  ↓
+Embeddings
 ```
 
-The **next immediate goal** is Experiment 12: move from numerical
-relationships to character-level language modeling.
-
-We will make the major conceptual transition from numerical learning to
-language:
+We now have the core pieces required to move toward attention:
 
 ```text
-Character Prediction
-      ↓
-Tokenization
-      ↓
-Embeddings
-      ↓
-Attention
-      ↓
-Transformer
-      ↓
+Character Language Model
+        ↓
+Learned Embeddings
+        ↓
+Self-Attention
+        ↓
+Multi-Head Attention
+        ↓
+Transformer Block
+        ↓
+Tiny Transformer
+        ↓
 Tiny LLM
 ```
 

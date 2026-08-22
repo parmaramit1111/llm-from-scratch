@@ -8,7 +8,7 @@ The test verifies:
 
 import pytest
 
-from llm_from_scratch.core.loss import MeanSquaredError
+from llm_from_scratch.core.loss import MeanSquaredError, CrossEntropy
 
 
 def test_mean_squared_error():
@@ -69,3 +69,25 @@ def test_mean_squared_error_requires_matching_lengths():
             predictions=[9.0, 12.0, 4.0],
             targets=[10.0, 10.0],
         )
+
+
+def test_cross_entropy_backward():
+    loss_function = CrossEntropy()
+
+    gradient = loss_function.backward(
+        probabilities=[0.05, 0.80, 0.10, 0.05],
+        target_index=1,
+    )
+
+    assert gradient == [0.0, -1.25, 0.0, 0.0]
+
+
+def test_cross_entropy_forward():
+    loss_function = CrossEntropy()
+
+    loss = loss_function.forward(
+        probabilities=[0.05, 0.80, 0.10, 0.05],
+        target_index=1,
+    )
+
+    assert abs(loss - 0.2231435513) < 1e-10
