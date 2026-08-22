@@ -1592,10 +1592,10 @@ The complete automated test suite currently contains:
 
 ## Current Focus
 
-The immediate learning focus is:
+The immediate learning focus is now:
 
 ```text
-Multi-Layer Training
+Self-Attention
 ```
 
 After that, the project will transition from numerical learning into
@@ -1683,9 +1683,10 @@ Backpropagation
 Network-Based Training
 ```
 
-The next milestone is to demonstrate that the complete system can
-**learn through multiple layers**, not merely execute forward and
-backward calculations.
+The next milestone is to implement **Self-Attention** from first principles.
+
+The language-model foundation now includes character prediction, context
+prediction, learned embeddings, and joint embedding/network training.
 
 > **The goal is not just to make the code work. The goal is to
 > understand why every abstraction exists and what problem it solves.**

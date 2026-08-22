@@ -885,56 +885,218 @@ gradient verification from Neuron through Layer and Network.
 
 ---
 
-# 17. What Comes Next
+# 17. What We Have Completed
 
-The gradient-verification milestone is now complete.
+The project has now moved beyond the original multi-layer training
+milestone and has reached a working character-level language-model
+foundation.
 
-The immediate next milestone is:
-
-```text
-Train a real multi-layer network
-```
-
-The experiment should demonstrate:
+The progression is:
 
 ```text
-Input
-  ↓
-Layer 1
-  ↓
-Layer 2
-  ↓
-Prediction
-  ↓
-Loss
-  ↓
-Backward through Layer 2
-  ↓
-Backward through Layer 1
-  ↓
-Update both layers
-  ↓
-Repeat
-```
-
-After the multi-layer training experiment, we can move toward the
-language-model-specific concepts:
-
-```text
+Multi-Layer Network
+        ↓
+Gradient Checking
+        ↓
 Character Prediction
         ↓
-Tokenization
+Context Prediction
         ↓
 Vocabulary
         ↓
-Embeddings
+Embedding
         ↓
-Attention
+Embedded Context Training
+```
+
+The language-model training pipeline is now:
+
+```text
+Text
+ ↓
+Vocabulary
+ ↓
+Token IDs
+ ↓
+Context
+ ↓
+Embedding
+ ↓
+Flattened Vectors
+ ↓
+Network
+ ↓
+Logits
+ ↓
+SoftmaxCrossEntropy
+ ↓
+Loss
+ ↓
+Backpropagation
+ ↓
+Update Network + Embedding
+```
+
+## Character Prediction
+
+The first character model demonstrated next-character prediction but
+exposed an important limitation:
+
+```text
+h → e
+e → l
+l → l
+l → o
+```
+
+The same input `l` had conflicting targets.
+
+This showed that the model needed more context.
+
+## Context Prediction
+
+Using a context size of two produced:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+The model successfully learned these mappings.
+
+This established the importance of contextual information for language
+modeling.
+
+## Embeddings
+
+The project then introduced learnable token embeddings:
+
+```text
+Token ID
+   ↓
+Embedding lookup
+   ↓
+Learned vector
+```
+
+The embedding implementation supports:
+
+```text
+Forward lookup
+Backward gradient accumulation
+Repeated-token accumulation
+Numerical gradient checking
+```
+
+An `EmbeddedSequence` adapter connects the embedding to the existing
+network:
+
+```text
+Token IDs
+   ↓
+Embedding
+   ↓
+Vectors
+   ↓
+Flatten
+   ↓
+Network
+```
+
+## Embedded Training
+
+`LanguageTrainer` was extended so that a single training step can update
+both:
+
+```text
+Network parameters
+        +
+Embedding parameters
+```
+
+The embedded context experiment successfully learned:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+with final loss approximately:
+
+```text
+0.000591
+```
+
+and approximately 99.9% probability for each correct prediction.
+
+The embedding vectors changed during training, demonstrating that the
+token representations themselves are learned.
+
+An important observation from the tiny experiment:
+
+```text
+o
+```
+
+was only used as a target and never appeared in an input context, so its
+embedding row did not receive an embedding gradient and remained
+unchanged.
+
+---
+
+# 18. What Comes Next
+
+The next major concept is:
+
+```text
+Self-Attention
+```
+
+We have already built:
+
+```text
+Context
+   ↓
+Learned Embeddings
+```
+
+The remaining question is:
+
+> How can the model dynamically decide which parts of a sequence are
+> important when creating a contextual representation?
+
+Self-attention answers that question.
+
+The next progression is:
+
+```text
+Learned Embeddings
         ↓
-Transformer
+Self-Attention
+        ↓
+Query / Key / Value
+        ↓
+Attention Scores
+        ↓
+Softmax
+        ↓
+Weighted Values
+        ↓
+Context Representation
+        ↓
+Multi-Head Attention
+        ↓
+Transformer Block
+        ↓
+Tiny Transformer
         ↓
 Tiny LLM
 ```
+
+We will implement self-attention from first principles and verify its
+forward and backward behavior before moving to multi-head attention.
 
 The important rule remains:
 

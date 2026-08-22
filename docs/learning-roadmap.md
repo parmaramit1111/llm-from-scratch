@@ -492,6 +492,8 @@ Softmax
 
 # 10. Phase 3 --- Character-Level Language Model
 
+**Status: Completed**
+
 Objective:
 
 Teach the model to predict the next character.
@@ -530,7 +532,14 @@ Vocabulary
 
 ---
 
-# 11. Phase 4 --- Tokenization
+# 11. Phase 4 --- Context Prediction and Tokenization
+
+**Context Prediction: Completed**
+
+The character model was extended to use multiple previous characters as context.
+For `hello` with `context_size = 2`, the training examples are `he → l`, `el → l`, and `ll → o`. The model successfully learned these mappings.
+
+A vocabulary abstraction now maps characters to token IDs and back. General tokenization beyond characters remains a future step.
 
 Move from individual characters toward tokens.
 
@@ -564,6 +573,8 @@ Tokenizer
 
 # 12. Phase 5 --- Embeddings
 
+**Status: Completed**
+
 Objective:
 
 Convert token IDs into vectors.
@@ -588,9 +599,15 @@ Learn:
 - embedding matrix
 - learned representations
 
+The implementation now includes `Embedding`, `EmbeddedSequence`, and embedding-aware `LanguageTrainer` integration. Embedding forward/backward behavior, repeated-token accumulation, numerical gradient checking, and joint embedding/network updates are tested.
+
+The embedded context experiment achieved final loss `0.000591` and correctly predicted `he → l`, `el → l`, and `ll → o` with approximately 99.9% probability.
+
 ---
 
 # 13. Phase 6 --- Attention
+
+**Status: Next**
 
 Objective:
 
@@ -1269,46 +1286,31 @@ Model Input
 
 ## Next Immediate Step
 
-The multi-layer training milestone is now complete.
+The neural-network foundation and embedding-based character language-model foundation are complete.
 
-The completed experiment demonstrated:
+The next major concept is **Self-Attention**.
 
-```text
-Input
-  ↓
-Layer 1
-  ↓
-Layer 2
-  ↓
-Prediction
-  ↓
-Loss
-  ↓
-Backward through Layer 2
-  ↓
-Backward through Layer 1
-  ↓
-Update both layers
-  ↓
-Lower loss
-```
-
-The next phase is the first direct language-model objective:
+Current path:
 
 ```text
-Character Vocabulary
+Character Language Model
         ↓
-Character Token IDs
+Context
         ↓
-Training Sequences
+Learned Embeddings
         ↓
-Next-Character Prediction
+Self-Attention
         ↓
-Character-Level Language Model
+Multi-Head Attention
+        ↓
+Transformer Block
+        ↓
+Tiny Transformer
+        ↓
+Tiny LLM
 ```
 
-This will be the first direct bridge from the verified neural-network
-engine to an actual language-model objective.
+The immediate goal is to implement a small single-head self-attention component from first principles and verify its forward and backward behavior before introducing multi-head attention.
 
 # 25. Suggested Git Commit Sequence
 

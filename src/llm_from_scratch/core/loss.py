@@ -14,6 +14,8 @@ For multiple outputs, MSE calculates the average squared error
 across all predictions.
 """
 
+import math
+
 
 class MeanSquaredError:
     """Calculate prediction error using Mean Squared Error."""
@@ -53,3 +55,33 @@ class MeanSquaredError:
                 strict=True,
             )
         ]
+
+
+
+
+class CrossEntropy:
+    """Calculate prediction error using Cross Entropy."""
+
+    def forward(
+        self,
+        probabilities: list[float],
+        target_index: int,
+    ) -> float:
+        """Calculate cross-entropy loss for one target."""
+
+        probability = probabilities[target_index]
+
+        return -math.log(probability)
+
+    def backward(
+        self,
+        probabilities: list[float],
+        target_index: int,
+    ) -> list[float]:
+        """Calculate the gradient with respect to probabilities."""
+
+        gradient = [0.0] * len(probabilities)
+
+        gradient[target_index] = -1 / probabilities[target_index]
+
+        return gradient
