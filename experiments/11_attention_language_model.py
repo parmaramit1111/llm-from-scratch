@@ -5,9 +5,13 @@ Build a small language model using:
 
     Token IDs
         ↓
-    Embedding
+    Token Embedding
+        ↓
+    Positional Embedding
         ↓
     Self-Attention
+        ↓
+    Feed-Forward Network
         ↓
     Output projection
         ↓
@@ -15,16 +19,24 @@ Build a small language model using:
         ↓
     Next-token prediction
 
-This experiment trains the attention and output projection
-parameters from scratch on a tiny character-level dataset.
+This experiment trains token embeddings, positional embeddings,
+self-attention parameters, feed-forward parameters, and the
+output projection from scratch on a tiny character-level dataset.
 """
 
 import math
 
 from llm_from_scratch.core.attention import SelfAttention
 from llm_from_scratch.core.embedding import Embedding
+from llm_from_scratch.core.feed_forward import FeedForward
+from llm_from_scratch.core.positional_embedding import (
+    PositionalEmbedding,
+)
 from llm_from_scratch.core.softmax_cross_entropy import (
     SoftmaxCrossEntropy,
+)
+from llm_from_scratch.language.positioned_sequence import (
+    PositionedSequence,
 )
 
 
@@ -40,24 +52,6 @@ TRAINING_EXAMPLES = [
     ("el", "l"),
     ("ll", "o"),
 ]
-
-
-def matmul(
-    left: list[list[float]],
-    right: list[list[float]],
-) -> list[list[float]]:
-    """Multiply two matrices."""
-
-    return [
-        [
-            sum(
-                left[row][index] * right[index][column]
-                for index in range(len(right))
-            )
-            for column in range(len(right[0]))
-        ]
-        for row in range(len(left))
-    ]
 
 
 def flatten(
@@ -101,10 +95,19 @@ def main() -> None:
     vocabulary_size = len(VOCABULARY)
     embedding_size = 3
     attention_size = 3
+    feed_forward_hidden_size = 6
 
     embedding = Embedding(
         vocabulary_size=vocabulary_size,
         embedding_size=embedding_size,
+    )
+
+    positioned_sequence = PositionedSequence(
+        embedding=embedding,
+        positional_embedding=PositionalEmbedding(
+            embedding_size=embedding_size,
+            maximum_sequence_length=2,
+        ),
     )
 
     attention = SelfAttention(
@@ -112,7 +115,13 @@ def main() -> None:
         attention_size=attention_size,
     )
 
-    # The flattened attention output has:
+    feed_forward = FeedForward(
+        input_size=attention_size,
+        hidden_size=feed_forward_hidden_size,
+        output_size=attention_size,
+    )
+
+    # The flattened feed-forward output has:
     #
     #     sequence_length × attention_size
     #
@@ -149,18 +158,30 @@ def main() -> None:
             target_index = TOKEN_TO_ID[target_token]
 
             # -------------------------------------------------
-            # Forward
+            # Forward: Embedding + Position
             # -------------------------------------------------
 
-            embedded = embedding.forward(
+            positioned = positioned_sequence.forward(
                 token_ids=token_ids,
             )
 
+            # -------------------------------------------------
+            # Forward: Self-Attention
+            # -------------------------------------------------
+
             attended = attention.forward(
-                embedded,
+                positioned,
             )
 
-            flattened = flatten(attended)
+            # -------------------------------------------------
+            # Forward: Feed-Forward Network
+            # -------------------------------------------------
+
+            transformed = feed_forward.forward(
+                attended,
+            )
+
+            flattened = flatten(transformed)
 
             logits = [
                 sum(
@@ -179,7 +200,7 @@ def main() -> None:
             total_loss += loss
 
             # -------------------------------------------------
-            # Backward: output projection
+            # Backward: Output projection
             # -------------------------------------------------
 
             logit_gradients = loss_function.backward(
@@ -197,7 +218,7 @@ def main() -> None:
 
             output_bias_gradients = logit_gradients
 
-            # Gradient with respect to flattened attention output.
+            # Gradient with respect to flattened FFN output.
             flattened_gradients = [
                 sum(
                     output_weights[row][column]
@@ -207,7 +228,7 @@ def main() -> None:
                 for row in range(output_size)
             ]
 
-            attended_gradients = [
+            transformed_gradients = [
                 flattened_gradients[
                     start:start + attention_size
                 ]
@@ -219,20 +240,27 @@ def main() -> None:
             ]
 
             # -------------------------------------------------
+            # Backward: Feed-Forward Network
+            # -------------------------------------------------
+
+            attended_gradients = feed_forward.backward(
+                transformed_gradients,
+            )
+
+            # -------------------------------------------------
             # Backward: Self-Attention
             # -------------------------------------------------
 
-            embedding_gradients = attention.backward(
+            positioned_gradients = attention.backward(
                 attended_gradients,
             )
 
             # -------------------------------------------------
-            # Backward: Embedding
+            # Backward: Positioned Sequence
             # -------------------------------------------------
 
-            embedding.backward(
-                token_ids=token_ids,
-                output_gradients=embedding_gradients,
+            positioned_sequence.backward(
+                output_gradients=positioned_gradients,
             )
 
             # -------------------------------------------------
@@ -274,7 +302,37 @@ def main() -> None:
                     )
 
             # -------------------------------------------------
-            # Update Embedding
+            # Update Feed-Forward Network
+            # -------------------------------------------------
+
+            for row in range(attention_size):
+                for column in range(feed_forward_hidden_size):
+                    feed_forward.input_weights[row][column] -= (
+                        learning_rate
+                        * feed_forward.input_weight_gradients[row][column]
+                    )
+
+            for column in range(feed_forward_hidden_size):
+                feed_forward.input_biases[column] -= (
+                    learning_rate
+                    * feed_forward.input_bias_gradients[column]
+                )
+
+            for row in range(feed_forward_hidden_size):
+                for column in range(attention_size):
+                    feed_forward.output_weights[row][column] -= (
+                        learning_rate
+                        * feed_forward.output_weight_gradients[row][column]
+                    )
+
+            for column in range(attention_size):
+                feed_forward.output_biases[column] -= (
+                    learning_rate
+                    * feed_forward.output_bias_gradients[column]
+                )
+
+            # -------------------------------------------------
+            # Update Token Embedding
             # -------------------------------------------------
 
             for row in range(vocabulary_size):
@@ -282,6 +340,23 @@ def main() -> None:
                     embedding.weights[row][column] -= (
                         learning_rate
                         * embedding.gradients[row][column]
+                    )
+
+            # -------------------------------------------------
+            # Update Positional Embedding
+            # -------------------------------------------------
+
+            for row in range(
+                positioned_sequence.positional_embedding.maximum_sequence_length
+            ):
+                for column in range(embedding_size):
+                    positioned_sequence.positional_embedding.weights[
+                        row
+                    ][column] -= (
+                        learning_rate
+                        * positioned_sequence.positional_embedding.gradients[
+                            row
+                        ][column]
                     )
 
         if epoch % 100 == 0:
@@ -310,15 +385,19 @@ def main() -> None:
             for token in input_text
         ]
 
-        embedded = embedding.forward(
+        positioned = positioned_sequence.forward(
             token_ids=token_ids,
         )
 
         attended = attention.forward(
-            embedded,
+            positioned,
         )
 
-        flattened = flatten(attended)
+        transformed = feed_forward.forward(
+            attended,
+        )
+
+        flattened = flatten(transformed)
 
         logits = [
             sum(
@@ -371,11 +450,13 @@ def main() -> None:
             for token in input_text
         ]
 
-        embedded = embedding.forward(
+        positioned = positioned_sequence.forward(
             token_ids=token_ids,
         )
 
-        attention.forward(embedded)
+        attention.forward(
+            positioned,
+        )
 
         print(f"Input: {input_text}")
         print()
