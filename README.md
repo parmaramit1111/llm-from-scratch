@@ -1,179 +1,247 @@
 # LLM From Scratch
 
-> Building a small Language Model from first principles to understand how modern LLMs actually work.
+> Building a small language model from first principles to understand how modern LLMs actually work.
 
-This project is my hands-on journey to understand **Large Language Models from the ground up**.
+This project is a hands-on implementation of the fundamental building
+blocks behind neural networks, Transformers, and small language models.
 
-Instead of starting with PyTorch, Hugging Face, or an existing pretrained model, the goal is to first implement the fundamental concepts ourselves using Python and mathematics.
+The goal is not to build a production-scale LLM.
 
-The objective is not to build the world's most powerful LLM.
-
-The objective is to understand **what is happening underneath the abstractions**.
-
----
-
-## 🎯 Why This Project?
-
-Modern LLM development often looks deceptively simple:
-
-```python
-model = load_model(...)
-output = model.generate(...)
-```
-
-But what actually happens inside the model?
-
-How does a random collection of parameters learn?
-
-How does backpropagation change those parameters?
-
-How does text become numbers?
-
-How do embeddings represent words?
-
-How does attention determine which information matters?
-
-How does a Transformer generate the next token?
-
-This project explores those questions by building the pieces ourselves.
+The goal is to understand **what happens underneath the abstractions** by
+implementing the important mathematics and training steps ourselves.
 
 ---
 
-## 🧠 Learning Path
+## Why This Project?
 
-The project will evolve progressively:
+Modern LLM usage can hide the underlying mechanics behind a few API calls.
+
+This project removes that abstraction step by step:
 
 ```text
-Python + Mathematics
-        ↓
-Neuron
-        ↓
 Forward Pass
-        ↓
+     ↓
 Loss
-        ↓
-Gradient
-        ↓
+     ↓
 Backpropagation
-        ↓
-Gradient Descent
-        ↓
+     ↓
+Gradients
+     ↓
+Parameter Updates
+     ↓
 Neural Network
-        ↓
-Character Prediction
-        ↓
-Tokenizer
-        ↓
+     ↓
 Embeddings
-        ↓
-Attention
-        ↓
-Transformer
-        ↓
-Tiny Language Model
-```
-
-Later, the implementations will be compared with established frameworks and lower-level technologies.
-
-```text
-Pure Python
      ↓
-NumPy
+Self-Attention
      ↓
-PyTorch
+Transformer Block
      ↓
-C++
-     ↓
-Rust
-     ↓
-CUDA / GPU
+Small Language Model
 ```
 
 ---
 
-## 🚀 First Goal
+## Learning Path
 
-The first model will be intentionally tiny.
-
-We will teach a randomly initialized model to learn:
+The project progressed through:
 
 ```text
-y = 3x
-```
-
-For example:
-
-```text
-1 → 3
-2 → 6
-3 → 9
-4 → 12
-5 → 15
-```
-
-The important part is that we **do not directly tell the model that the answer is 3**.
-
-The model starts with random parameters and learns through:
-
-```text
+Neuron
+  ↓
 Forward Pass
-     ↓
-Prediction
-     ↓
+  ↓
 Loss
-     ↓
-Backpropagation
-     ↓
+  ↓
 Gradient
-     ↓
+  ↓
+Backpropagation
+  ↓
 Gradient Descent
-     ↓
-Updated Parameters
-     ↓
-Repeat
+  ↓
+Neural Network
+  ↓
+Character Prediction
+  ↓
+Context Prediction
+  ↓
+Token Embeddings
+  ↓
+Self-Attention
+  ↓
+Positional Embeddings
+  ↓
+Feed-Forward Network
+  ↓
+Layer Normalization
+  ↓
+Residual Connections
+  ↓
+Transformer Block
+  ↓
+Small Language Model
 ```
 
-This will be our first demonstration of machine learning from scratch.
+Each major component was implemented and tested before moving to the
+next stage.
 
 ---
 
-## 📚 Concepts
+## Current Architecture
 
-Throughout the project we will learn and implement:
+The completed educational model follows this pipeline:
 
-* Neurons
-* Weights
-* Biases
-* Forward propagation
-* Loss functions
-* Derivatives
-* Gradients
-* Backpropagation
-* Gradient descent
-* Learning rate
-* Epochs
-* Batches
-* Activation functions
-* Neural networks
-* Tokenization
-* Vocabulary
-* Token IDs
-* Embeddings
-* Positional information
-* Attention
-* Self-attention
-* Multi-head attention
-* Transformer blocks
-* Logits
-* Probability distributions
-* Next-token prediction
-* Language-model training
+```text
+Token IDs
+    ↓
+Token Embeddings
+    ↓
+Positional Embeddings
+    ↓
+Transformer Block
+    ↓
+Output Projection
+    ↓
+Logits
+    ↓
+Softmax
+    ↓
+Next-Token Prediction
+```
+
+The Transformer block contains:
+
+```text
+Input
+  ↓
+Self-Attention
+  ↓
+Residual Connection
+  ↓
+Layer Normalization
+  ↓
+Feed-Forward Network
+  ↓
+Residual Connection
+  ↓
+Layer Normalization
+  ↓
+Output
+```
 
 ---
 
-## 📁 Project Structure
+## Small Language Model
 
-The project will grow incrementally.
+The current model is a deliberately tiny trainable language model.
+
+It was trained on a simple character-level task:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+The final experiment successfully learned these mappings with very high
+confidence.
+
+Example result:
+
+```text
+Input: he
+Target: l
+Prediction: l
+
+Input: el
+Target: l
+Prediction: l
+
+Input: ll
+Target: o
+Prediction: o
+```
+
+The final training loss reached approximately:
+
+```text
+0.000203
+```
+
+This demonstrates the complete learning loop:
+
+```text
+Input
+  ↓
+Forward Pass
+  ↓
+Prediction
+  ↓
+Loss
+  ↓
+Backpropagation
+  ↓
+Gradients
+  ↓
+Parameter Updates
+  ↓
+Improved Prediction
+```
+
+---
+
+## Concepts Implemented
+
+The project covers:
+
+- Neurons
+- Weights and biases
+- Forward propagation
+- Loss functions
+- Derivatives
+- Gradients
+- Backpropagation
+- Gradient descent
+- Learning rate
+- Training loops
+- ReLU activation
+- Multi-layer neural networks
+- Character-level prediction
+- Context prediction
+- Token embeddings
+- Positional embeddings
+- Self-attention
+- Feed-forward networks
+- Layer normalization
+- Residual connections
+- Transformer blocks
+- Logits
+- Softmax
+- Cross-entropy loss
+- Next-token prediction
+
+---
+
+## Testing
+
+The mathematical components are covered by automated unit tests.
+
+Testing includes:
+
+- Forward calculations
+- Backward calculations
+- Parameter gradients
+- Input gradients
+- Gradient-path verification
+- Numerical gradient checking
+- End-to-end model behavior
+
+The project uses numerical gradient checking where appropriate to compare
+analytical gradients against independently calculated numerical gradients.
+
+---
+
+## Project Structure
 
 ```text
 llm-from-scratch/
@@ -186,270 +254,141 @@ llm-from-scratch/
 ├── src/
 │   └── llm_from_scratch/
 │       ├── core/
-│       ├── data/
-│       └── language/
+│       ├── language/
+│       └── models/
 │
 ├── experiments/
 │
 ├── tests/
 │
-└── README.md
+├── README.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── pyproject.toml
 ```
 
-We intentionally won't implement everything on day one.
+### Source Code
 
-Each component will be introduced when we reach that stage of the learning journey.
+Reusable implementations live under:
+
+```text
+src/llm_from_scratch/
+```
+
+### Experiments
+
+Learning experiments live under:
+
+```text
+experiments/
+```
+
+The current small-language-model experiment is:
+
+```text
+experiments/12_small_language_model.py
+```
+
+### Tests
+
+Automated tests live under:
+
+```text
+tests/
+```
 
 ---
 
-## 🧪 Development Philosophy
+## Development Philosophy
 
-### Start simple
+### Build Before Abstracting
 
-The first implementations will use:
+Instead of starting with a high-level framework, the project first
+implements the underlying mathematics directly.
+
+For example:
 
 ```text
-Python
-+
-Python standard library
-+
-Mathematics
+Understand matrix operations
+        ↓
+Implement the operation
+        ↓
+Test the operation
+        ↓
+Use it inside a larger component
 ```
 
-No deep-learning framework initially.
+### Understand Before Using Frameworks
 
-### Understand before abstracting
+The purpose is not to replace PyTorch, NumPy, or other mature tools.
 
-Before using:
+The purpose is to understand what those tools are doing for us.
 
-```python
-loss.backward()
-```
+### Test the Mathematics
 
-we should understand what backpropagation is doing.
-
-Before using:
-
-```python
-torch.matmul(...)
-```
-
-we should understand the underlying matrix operation.
-
-Before using a Transformer implementation, we should understand attention.
-
-The goal is to remove the **black box**.
+Important backward-pass implementations are verified with unit tests and,
+where useful, numerical gradient checks.
 
 ---
 
-## 🔬 Experiments
+## Project Status
 
-Experiments will be kept separate from reusable implementation code.
+**Small Language Model milestone: Completed**
 
-Examples:
+The project has progressed from individual neural-network components to a
+complete trainable Transformer-based language model implemented from
+scratch.
+
+The current repository is now focused on:
 
 ```text
-01_linear_learning.py
-02_single_neuron.py
-03_multi_neuron.py
-04_training_loop.py
-05_character_prediction.py
-06_tokenization.py
-07_embeddings.py
-08_attention.py
-09_tiny_transformer.py
+Understanding
+    ↓
+Implementing
+    ↓
+Testing
+    ↓
+Documenting
 ```
-
-Each experiment should answer:
-
-1. What are we trying to learn?
-2. What mathematics is involved?
-3. What does the code do?
-4. What happened during training?
-5. What did we learn?
 
 ---
 
-## 🧪 Testing
+## Repository Scope
 
-Mathematical implementations will be tested as we build them.
+This repository is intentionally educational.
 
-Particular attention will be given to:
+It is **not** intended to compete with GPT, Claude, Gemini, Llama, or
+other production-scale language models.
 
-* Forward calculations
-* Loss calculations
-* Gradients
-* Parameter updates
-* Tokenization
-* Attention calculations
-
-Eventually we will also compare:
-
-```text
-Analytical Gradient
-        vs
-Numerical Gradient
-```
-
-to verify our backpropagation implementation.
-
----
-
-## 🛠️ Technology Roadmap
-
-### Phase 1
-
-```text
-Python
-```
-
-Build the fundamentals without ML frameworks.
-
-### Phase 2
-
-```text
-NumPy
-```
-
-Learn vectorized numerical computation.
-
-### Phase 3
-
-```text
-PyTorch
-```
-
-Compare our implementation with a production-grade deep-learning framework.
-
-### Phase 4
-
-```text
-C++
-```
-
-Explore low-level performance and memory management.
-
-### Phase 5
-
-```text
-Rust
-```
-
-Explore high-performance systems programming with memory safety.
-
-### Phase 6
-
-```text
-CUDA / GPU
-```
-
-Understand how the underlying hardware accelerates the matrix operations used by neural networks.
-
----
-
-## 🌱 Future Applications
-
-This repository is primarily an educational project, but the knowledge developed here will eventually be applied to separate projects.
-
-### NDC / RxNorm Intelligence
-
-A private healthcare project exploring:
-
-```text
-Prescription
-     ↓
-Drug Normalization
-     ↓
-RxNorm
-     ↓
-NDC Relationships
-     ↓
-Matching Model
-     ↓
-Confidence Score
-```
-
-The actual healthcare data, proprietary algorithms, and business logic will remain in a separate private repository.
-
-### Bhagavad Gita Language Model
-
-A future project exploring how language models can work with the Bhagavad Gita to:
-
-* identify relevant teachings
-* explain concepts
-* connect teachings with modern situations
-* generate short illustrative stories
-
-The project will clearly distinguish between the original source material and model-generated interpretation.
-
----
-
-## ⚠️ What This Project Is Not
-
-This is **not** intended to compete with GPT, Claude, Gemini, Llama, or other large production models.
-
-It is an educational implementation.
-
-The goal is:
+The objective is:
 
 > **Understand the machine before using the machine.**
 
 ---
 
-## 📈 Progress
+## Learning in Public
 
-* [ ] Project setup
-* [ ] First neuron
-* [ ] Forward pass
-* [ ] Loss function
-* [ ] Gradient calculation
-* [ ] Backpropagation
-* [ ] Gradient descent
-* [ ] Training loop
-* [ ] Multi-neuron network
-* [ ] Character-level language model
-* [ ] Tokenizer
-* [ ] Embeddings
-* [ ] Self-attention
-* [ ] Multi-head attention
-* [ ] Transformer block
-* [ ] Tiny Transformer
-* [ ] Tiny language model
-* [ ] NumPy implementation
-* [ ] PyTorch comparison
-* [ ] C++ exploration
-* [ ] Rust exploration
-* [ ] GPU/CUDA exploration
+The repository documents the implementation journey, including:
+
+- Experiments
+- Debugging
+- Mathematical explanations
+- Unit tests
+- Architectural decisions
+- Lessons learned
+
+The code and documentation are kept intentionally simple so that each
+major concept can be studied independently.
 
 ---
 
-## 🤝 Learning in Public
-
-This repository is intentionally public.
-
-The goal is to document the process rather than only publish the final result.
-
-Expect:
-
-* experiments
-* mistakes
-* debugging
-* mathematical explanations
-* performance comparisons
-* architectural decisions
-* lessons learned
-
-If you are also learning how LLMs work internally, feel free to explore the experiments and follow along.
-
----
-
-## 📜 License
+## License
 
 MIT License
 
 ---
 
-## ⭐ The Goal
+## The Goal
 
 Start with:
 
@@ -457,12 +396,12 @@ Start with:
 a few numbers
 ```
 
-and eventually reach:
+and reach:
 
 ```text
-a tiny Transformer
+a working small Transformer language model
 ```
 
-while understanding every major step in between.
+while understanding the major steps in between.
 
 **Learn the fundamentals. Build the pieces. Remove the black box.**

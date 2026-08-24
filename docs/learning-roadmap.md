@@ -1,1091 +1,134 @@
-# LLM From Scratch --- Development Plan
+# LLM From Scratch --- Learning Roadmap
 
 ## 1. Project Goal
 
 Build a small language model from first principles to understand how
-modern neural networks and LLMs work internally.
+modern neural networks, attention mechanisms, Transformers, and LLMs
+work internally.
 
-The project will intentionally begin without PyTorch, TensorFlow,
-Hugging Face, or other ML frameworks.
+The project intentionally avoids ML frameworks during the core learning
+process.
 
-Learning path:
+The primary goal is not to build a production-quality LLM.
+
+The goal is:
+
+> Understand what happens inside an LLM by implementing the important
+> mathematical components ourselves.
+
+---
+
+## 2. Learning Path
+
+The project evolved through the following progression:
 
 ```text
 Python + Math
-    ↓
+      ↓
 Neuron
-    ↓
+      ↓
 Forward Pass
-    ↓
+      ↓
 Loss
-    ↓
+      ↓
 Gradient
-    ↓
+      ↓
 Backpropagation
-    ↓
+      ↓
 Gradient Descent
-    ↓
+      ↓
 Neural Network
-    ↓
+      ↓
+Multi-Layer Network
+      ↓
 Character Prediction
-    ↓
-Tokenizer
-    ↓
-Embeddings
-    ↓
-Attention
-    ↓
-Transformer
-    ↓
-Tiny LLM
+      ↓
+Context Prediction
+      ↓
+Token Embeddings
+      ↓
+Self-Attention
+      ↓
+Feed-Forward Network
+      ↓
+Layer Normalization
+      ↓
+Residual Connections
+      ↓
+Transformer Block
+      ↓
+Small Language Model
 ```
 
 ---
 
-# 2. Repository Strategy
-
-## Public Repository
-
-Recommended: **YES**
-
-Keep this learning project public.
-
-Purpose:
-
-- Document the learning journey
-- Demonstrate understanding of ML/LLM fundamentals
-- Build a useful GitHub portfolio project
-- Allow others to reproduce the experiments
-- Keep the implementation educational and transparent
-
-Suggested repository name:
-
-```text
-llm-from-scratch
-```
-
-The repository should contain only generic learning code and public
-datasets/examples.
-
-## Private Repository
-
-Keep the production NDC/RxNorm intelligence system private.
-
-Suggested repository:
-
-```text
-ndc-rxnorm-intelligence
-```
-
-This private project can later contain:
-
-- RxNorm integration
-- NDC normalization
-- Proprietary matching logic
-- Pharmacy/prescription data
-- Training datasets
-- Evaluation datasets
-- Production models
-- Business rules
-- Customer-specific logic
-
-Important: the public project should teach the underlying technology,
-while the private project contains the actual healthcare/business
-intelligence.
-
----
-
-# 3. Development Principles
+## 3. Development Principles
 
 1.  Start with plain Python.
-2.  Avoid ML frameworks initially.
-3.  Implement the mathematics ourselves.
-4.  Keep every stage small and testable.
-5.  Add automated tests from the beginning.
-6.  Record experiments and results.
-7.  Introduce NumPy only after the pure-Python implementation is
-    understood.
-8.  Introduce PyTorch only after we understand what it is replacing.
-9.  Later investigate C++ and Rust for performance/system-level
-    implementations.
-10. Never put private healthcare/customer data into the public
-    repository.
+2.  Implement the mathematics ourselves.
+3.  Keep every component small and testable.
+4.  Add automated tests for important components.
+5.  Use numerical gradient checking where appropriate.
+6.  Record meaningful experiments and results.
+7.  Understand a concept before introducing higher-level frameworks.
+8.  Keep the implementation educational and readable.
+9.  Prefer explicit code over unnecessary abstraction.
+10. Keep the project focused on understanding LLM fundamentals.
 
 ---
 
-# 4. Initial Dependencies
+## 4. Completed Milestones
 
-## Phase 1 --- No Third-Party ML Packages
-
-Required:
-
-```text
-Python 3.11+
-```
-
-Use only Python standard library initially.
-
-Recommended standard-library modules:
-
-```text
-math
-random
-dataclasses
-typing
-json
-pathlib
-```
-
-Development/testing:
-
-```text
-pytest
-ruff
-```
-
-These are development tools, not ML frameworks.
-
----
-
-# 5. Initial Project Structure
-
-```text
-llm-from-scratch/
-│
-├── README.md
-├── LICENSE
-├── .gitignore
-├── pyproject.toml
-│
-├── docs/
-│   ├── learning-roadmap.md
-│   ├── concepts.md
-│   └── experiments.md
-│
-├── src/
-│   └── llm_from_scratch/
-│       ├── __init__.py
-│       │
-│       ├── core/
-│       │   ├── __init__.py
-│       │   ├── neuron.py
-│       │   ├── layer.py
-│       │   ├── network.py
-│       │   ├── loss.py
-│       │   ├── gradient.py
-│       │   ├── optimizer.py
-│       │   └── training.py
-│       │
-│       ├── data/
-│       │   ├── __init__.py
-│       │   └── dataset.py
-│       │
-│       └── language/
-│           ├── __init__.py
-│           ├── tokenizer.py
-│           ├── vocabulary.py
-│           ├── embedding.py
-│           ├── attention.py
-│           └── transformer.py
-│
-├── experiments/
-│   ├── 01_linear_learning.py
-│   ├── 02_single_neuron.py
-│   ├── 03_multi_neuron.py
-│   ├── 04_activation.py
-│   ├── 05_multiple_layers.py
-│   └── ...
-│
-├── tests/
-│   ├── test_neuron.py
-│   ├── test_loss.py
-│   ├── test_gradient.py
-│   ├── test_optimizer.py
-│   ├── test_training.py
-│   └── test_tokenizer.py
-│
-└── notebooks/
-    └── experiments.ipynb
-```
-
-The notebook is optional. The main implementation should remain normal
-Python modules so the project stays understandable and testable.
-
----
-
-# 6. Phase 1 --- First Learning Model
-
-## Objective
-
-Teach a model:
-
-```text
-y = 3x
-```
-
-Example:
-
-```text
-x    y
-1    3
-2    6
-3    9
-4    12
-5    15
-```
-
-The model should start with a random weight and learn approximately:
-
-```text
-weight = 3
-```
-
-without us directly assigning `3`.
-
----
-
-# 7. Core Classes
-
-## `neuron.py`
-
-### Class
-
-```text
-Neuron
-```
-
-Responsibilities:
-
-- Store weight
-- Store bias
-- Perform forward calculation
-- Store values required for backward propagation
-- Calculate gradients
-
-Conceptual API:
-
-```python
-Neuron.forward(input_value)
-Neuron.backward(gradient)
-Neuron.update(learning_rate)
-```
-
----
-
-## `loss.py`
-
-### Class
-
-```text
-MeanSquaredError
-```
-
-Responsibilities:
-
-- Calculate prediction error
-- Calculate derivative of the loss
-
-Conceptual API:
-
-```python
-loss = MeanSquaredError()
-loss.forward(prediction, target)
-loss.backward(prediction, target)
-```
-
----
-
-## `gradient_check.py`
-
-### Purpose
-
-Keep numerical gradient verification separate from the model
-implementation.
-
-Initial responsibilities:
-
-- Calculate numerical gradients using central finite differences
-- Compare numerical gradients with analytical gradients
-- Validate backpropagation independently
-
-The gradient checker is a verification tool rather than part of the
-normal training execution path.
-
-Later this may evolve into a broader automatic-differentiation and
-verification area.
-
----
-
-## `optimizer.py`
-
-### Class
-
-```text
-GradientDescent
-```
-
-Responsibilities:
-
-- Receive parameters and gradients
-- Update parameters
-- Apply learning rate
-
-Conceptual API:
-
-```python
-optimizer.step(parameters, gradients)
-```
-
----
-
-## `layer.py`
-
-### Class
-
-```text
-Layer
-```
-
-Responsibilities:
-
-- Manage multiple neurons
-- Pass the same input vector to every neuron
-- Perform forward pass
-- Perform backward pass
-- Aggregate input gradients from all neurons
-- Expose trainable parameters and gradients
-
-Conceptual flow:
-
-```text
-inputs
-  ↓
-DenseLayer
-  ↓
-neurons
-  ↓
-outputs
-```
-
----
-
-## `network.py`
-
-### Class
-
-```text
-Network
-```
-
-Responsibilities:
-
-- Manage multiple layers
-- Execute forward propagation in layer order
-- Execute backward propagation in reverse layer order
-- Expose the network's trainable structure
-
-Conceptual API:
-
-```python
-network.forward(inputs)
-network.backward(loss_gradient)
-network.parameters()
-```
-
----
-
-## `training.py`
-
-### Class
-
-```text
-Trainer
-```
-
-Responsibilities:
-
-- Training loop
-- Forward pass
-- Loss calculation
-- Backpropagation
-- Parameter updates
-- Epoch tracking
-- Training metrics
-
-Conceptual workflow:
-
-```text
-for epoch:
-
-    prediction = model.forward(input)
-
-    loss = loss_function.forward(
-        prediction,
-        target
-    )
-
-    gradient = loss_function.backward(
-        prediction,
-        target
-    )
-
-    model.backward(gradient)
-
-    optimizer.step(
-        model.parameters()
-    )
-```
-
----
-
-# 8. Phase 2 --- Multi-Neuron Network
-
-Objective:
-
-Move from:
-
-```text
-Input → Neuron → Output
-```
-
-to:
-
-```text
-Input
-  ↓
-Dense Layer
-  ↓
-Multiple Neurons
-  ↓
-Output
-```
-
-Learn:
-
-- vectors
-- matrices
-- multiple weights
-- multiple biases
-- activation functions
-
-Add:
-
-```text
-activation.py
-```
-
-Initial class:
-
-```text
-ReLU
-```
-
-Later:
-
-```text
-Sigmoid
-Tanh
-Softmax
-```
-
----
-
-# 10. Phase 3 --- Character-Level Language Model
+### Phase 1 --- Neural Network Foundation
 
 **Status: Completed**
 
-Objective:
-
-Teach the model to predict the next character.
-
-Example:
-
-```text
-Input:  hel
-Target: l
-```
-
-Training examples:
-
-```text
-h     → e
-he    → l
-hel   → l
-hell  → o
-hello → space
-```
-
-Add:
-
-```text
-language/
-├── tokenizer.py
-└── vocabulary.py
-```
-
-Classes:
-
-```text
-CharacterTokenizer
-Vocabulary
-```
-
----
-
-# 11. Phase 4 --- Context Prediction and Tokenization
-
-**Context Prediction: Completed**
-
-The character model was extended to use multiple previous characters as context.
-For `hello` with `context_size = 2`, the training examples are `he → l`, `el → l`, and `ll → o`. The model successfully learned these mappings.
-
-A vocabulary abstraction now maps characters to token IDs and back. General tokenization beyond characters remains a future step.
-
-Move from individual characters toward tokens.
-
-Example:
-
-```text
-"amoxicillin 500 mg"
-```
-
-could eventually become conceptual tokens such as:
-
-```text
-["amoxicillin", "500", "mg"]
-```
-
-Learn:
-
-- vocabulary
-- token IDs
-- special tokens
-- encode
-- decode
-
-Class:
-
-```text
-Tokenizer
-```
-
----
-
-# 12. Phase 5 --- Embeddings
-
-**Status: Completed**
-
-Objective:
-
-Convert token IDs into vectors.
-
-```text
-Token ID
-   ↓
-Embedding lookup
-   ↓
-Vector
-```
-
-Class:
-
-```text
-Embedding
-```
-
-Learn:
-
-- embedding dimensions
-- embedding matrix
-- learned representations
-
-The implementation now includes `Embedding`, `EmbeddedSequence`, and embedding-aware `LanguageTrainer` integration. Embedding forward/backward behavior, repeated-token accumulation, numerical gradient checking, and joint embedding/network updates are tested.
-
-The embedded context experiment achieved final loss `0.000591` and correctly predicted `he → l`, `el → l`, and `ll → o` with approximately 99.9% probability.
-
----
-
-# 13. Phase 6 --- Attention
-
-**Status: Next**
-
-Objective:
-
-Understand the central mechanism behind Transformers.
-
-Conceptual workflow:
-
-```text
-Tokens
-  ↓
-Embeddings
-  ↓
-Query
-Key
-Value
-  ↓
-Attention Scores
-  ↓
-Weighted Values
-  ↓
-Context Representation
-```
-
-Class:
-
-```text
-SelfAttention
-```
-
-Initially implement single-head attention.
-
-Only after understanding it move to:
-
-```text
-MultiHeadAttention
-```
-
----
-
-# 14. Phase 7 --- Transformer Block
-
-Build:
-
-```text
-TransformerBlock
-```
-
-Components:
-
-```text
-Self Attention
-      ↓
-Residual Connection
-      ↓
-Layer Normalization
-      ↓
-Feed Forward Network
-      ↓
-Residual Connection
-      ↓
-Layer Normalization
-```
-
-Then stack multiple blocks.
-
----
-
-# 15. Phase 8 --- Tiny LLM
-
-Final educational architecture:
-
-```text
-Text
- ↓
-Tokenizer
- ↓
-Token IDs
- ↓
-Embeddings
- ↓
-Positional Information
- ↓
-Transformer Blocks
- ↓
-Linear Output Layer
- ↓
-Logits
- ↓
-Softmax
- ↓
-Next Token
-```
-
-Goal:
-
-Generate short text based on learned training data.
-
-This will be a deliberately tiny model, designed for understanding
-rather than useful production-quality generation.
-
----
-
-# 16. Training Workflow
-
-Every model should follow the same fundamental cycle:
-
-```text
-             TRAINING LOOP
-
-                 Input
-                   ↓
-              Forward Pass
-                   ↓
-              Prediction
-                   ↓
-              Calculate Loss
-                   ↓
-             Backpropagation
-                   ↓
-                Gradients
-                   ↓
-            Update Parameters
-                   ↓
-             Next Iteration
-                   ↓
-              Lower Loss
-```
-
-Important concepts to learn:
-
-```text
-parameter
-weight
-bias
-epoch
-batch
-learning rate
-loss
-gradient
-backpropagation
-gradient descent
-activation
-embedding
-logit
-probability
-attention
-```
-
----
-
-# 17. Testing Strategy
-
-Every important mathematical component should have tests.
-
-Examples:
+Implemented:
 
 ```text
 Neuron
-- forward calculation
-- gradient calculation
-- parameter update
-
-Loss
-- expected loss
-- expected gradient
-
-Optimizer
-- parameter decreases/increases correctly
-
-Tokenizer
-- encode
-- decode
-
-Attention
-- tensor/vector dimensions
-- attention weights
-- numerical stability
-```
-
-For gradients, eventually use numerical gradient checking:
-
-```text
-Analytical gradient
-        vs
-Numerical gradient
-```
-
-This is important because it verifies that our backpropagation
-implementation is actually correct.
-
----
-
-# 18. Experiment Tracking
-
-Each experiment should record:
-
-```text
-Experiment
-Dataset
-Model architecture
-Learning rate
-Epochs
-Number of parameters
-Initial loss
-Final loss
-Training time
-Result
-What we learned
-```
-
-Keep short notes in:
-
-```text
-docs/experiments.md
-```
-
----
-
-# 19. Package Evolution
-
-Do NOT install everything at the beginning.
-
-## Phase 1
-
-```text
-Python standard library
-pytest
-ruff
-```
-
-## Phase 2
-
-Introduce:
-
-```text
-NumPy
-```
-
-Purpose:
-
-- vectors
-- matrices
-- vectorized operations
-- numerical computation
-
-## Phase 3
-
-Introduce:
-
-```text
-PyTorch
-```
-
-Purpose:
-
-- tensors
-- automatic differentiation
-- GPU
-- optimized training
-
-Only introduce these after implementing the underlying concepts
-ourselves.
-
----
-
-# 20. Later Systems Track
-
-After the Python implementation is understood:
-
-```text
-Python implementation
-        ↓
-NumPy implementation
-        ↓
-PyTorch implementation
-        ↓
-C++ implementation
-        ↓
-Rust implementation
-        ↓
-CUDA/GPU investigation
-```
-
-The goal is to understand both:
-
-```text
-AI / mathematics
-```
-
-and:
-
-```text
-systems / performance
-```
-
----
-
-# 21. Future Project --- NDC/RxNorm Intelligence
-
-Keep this in a **separate private repository**.
-
-Possible future architecture:
-
-```text
-Prescription
-     ↓
-Drug/NDC normalization
-     ↓
-RxNorm
-     ↓
-Candidate NDCs
-     ↓
-Matching model
-     ↓
-Confidence score
-     ↓
-Matched / Review
-```
-
-The public `llm-from-scratch` repository should provide the educational
-foundation.
-
-The private NDC/RxNorm repository will contain the actual
-healthcare/business implementation.
-
-Important architectural principle:
-
-```text
-RxNorm + deterministic rules
-              +
-        ML / LLM assistance
-```
-
-Do not rely on an LLM alone for medication identity or equivalence
-decisions.
-
----
-
-# 22. Future Project --- Bhagavad Gita Model
-
-This can eventually become a second project built on the same
-foundation.
-
-Potential progression:
-
-```text
-Gita corpus
-    ↓
-Clean text
-    ↓
-Tokenizer
-    ↓
-Language model
-    ↓
-Fine-tuning / training experiment
-    ↓
-Relevant verse retrieval
-    ↓
-Modern-world interpretation
-    ↓
-Short story / explanation
-```
-
-We should clearly distinguish:
-
-```text
-Original scripture
-      vs
-Model interpretation
-      vs
-Modern application
-```
-
----
-
-# 23. Definition of Success
-
-The first milestone is NOT:
-
-> Build a powerful LLM.
-
-The first milestone is:
-
-> Build a model whose random parameters become useful parameters through
-> training, and understand exactly why that happened.
-
-Then progressively remove the mystery:
-
-```text
-"I can use an LLM"
-        ↓
-"I understand neural networks"
-        ↓
-"I understand backpropagation"
-        ↓
-"I understand embeddings"
-        ↓
-"I understand attention"
-        ↓
-"I understand Transformers"
-        ↓
-"I can build a tiny LLM"
-        ↓
-"I understand how production LLM systems are assembled"
-```
-
----
-
-# 24. Current Development Status
-
-The initial neural-network foundation has now been implemented,
-trained, and independently gradient-verified.
-
-## Completed Milestones
-
-### Neural Network Foundation
-
-```text
-Multiple Inputs
-      ↓
-Neuron
-      ↓
+  ↓
 Layer
-      ↓
+  ↓
 Network
-      ↓
+  ↓
 Trainer
-      ↓
+  ↓
 Gradient Descent
 ```
 
-The current implementation supports:
+The implementation supports:
 
-- Multiple inputs per neuron
-- Multiple weights per neuron
-- Individual weight gradients
+- Multiple inputs
+- Multiple weights
+- Biases
+- Forward propagation
+- Backward propagation
+- Weight gradients
 - Bias gradients
 - Input gradients
 - ReLU activation
-- Multiple neurons per layer
-- Input-gradient aggregation inside a layer
-- Multiple layers inside a network
-- Forward propagation through multiple layers
-- Backward propagation through multiple layers
-- Network-level training through `Trainer`
-- Gradient-based updates for every weight and bias
+- Multiple neurons
+- Multiple layers
+- Parameter updates
+- End-to-end training
 
-### Gradient Verification
+### Phase 2 --- Gradient Verification
 
-The gradient-checking milestone is now complete.
+**Status: Completed**
 
-```text
-GradientChecker
-      ↓
-Neuron
- ├── weight[0] ✓
- ├── weight[1] ✓
- └── bias      ✓
-      ↓
-Layer
- ├── input[0]  ✓
- └── input[1]  ✓
-      ↓
-Network
- ├── input[0]  ✓
- └── input[1]  ✓
-```
+A numerical gradient checker was implemented to independently verify
+analytical gradients.
 
-The implementation uses numerical gradients as an independent
-verification path:
+The project compares:
 
 ```text
-Analytical gradient
+Analytical Gradient
         vs
-Numerical gradient
+Numerical Gradient
 ```
 
-Numerical gradients use the central-difference approximation:
+using the central-difference approximation:
 
 ```text
 f(x + ε) - f(x - ε)
@@ -1093,285 +136,657 @@ f(x + ε) - f(x - ε)
         2ε
 ```
 
-This verifies that the backward propagation implemented by the Neuron,
-Layer, and Network produces gradients consistent with the observed
-change in loss.
+Gradient verification was performed across the neural-network components
+to ensure that the backward implementations are mathematically
+consistent.
 
-## Current Experiments
+### Phase 3 --- Character-Level Language Model
 
-### `03_multi_neuron.py`
+**Status: Completed**
 
-Demonstrates:
+The project moved from general neural networks to language modeling.
+
+The model learned to predict the next character from previous
+characters.
+
+Example:
 
 ```text
-Input
-  ↓
-Multiple Neurons
-  ↓
-Output Vector
+Input  → Target
+
+h      → e
+he     → l
+hel    → l
+hell   → o
 ```
 
-### `04_activation.py`
+This introduced the fundamental language-modeling concept:
 
-Demonstrates ReLU in a trainable model:
+```text
+Context
+   ↓
+Prediction
+   ↓
+Loss
+   ↓
+Gradient
+   ↓
+Parameter Update
+```
+
+### Phase 4 --- Context Prediction
+
+**Status: Completed**
+
+The character model was extended to use multiple characters as context.
+
+For the training sequence:
+
+```text
+hello
+```
+
+with a context size of two:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+The model successfully learned these context-dependent mappings.
+
+This was an important transition from simple character prediction toward
+the concept of contextual language modeling.
+
+### Phase 5 --- Token Embeddings
+
+**Status: Completed**
+
+Token IDs were converted into learned vector representations.
+
+```text
+Token ID
+   ↓
+Embedding Lookup
+   ↓
+Vector
+```
+
+Implemented:
+
+```text
+Embedding
+EmbeddedSequence
+```
+
+The embedding implementation includes:
+
+- Embedding lookup
+- Forward propagation
+- Backward propagation
+- Repeated-token gradient accumulation
+- Numerical gradient verification
+- Joint embedding/network updates
+
+The embedding-based context experiment successfully learned:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+with very high confidence.
+
+### Phase 6 --- Self-Attention
+
+**Status: Completed**
+
+Self-attention was implemented from first principles.
+
+The implementation covers the fundamental attention concepts:
 
 ```text
 Input
   ↓
-Network
+Query
+Key
+Value
   ↓
-Layer
+Attention Scores
   ↓
-Neuron
+Softmax
+  ↓
+Weighted Values
+  ↓
+Context Representation
+```
+
+The attention implementation includes trainable projections and
+backpropagation.
+
+The attention language-model experiment demonstrated that the model
+could learn context-dependent predictions.
+
+### Phase 7 --- Positional Embeddings
+
+**Status: Completed**
+
+Positional information was introduced so that the model can distinguish
+between token content and token position.
+
+Conceptually:
+
+```text
+Token Embedding
+       +
+Position Embedding
+       ↓
+Positioned Sequence
+```
+
+The implementation includes:
+
+- Positional embedding lookup
+- Forward propagation
+- Backward propagation
+- Token embedding gradient propagation
+- Position embedding gradient propagation
+- Numerical gradient verification
+
+### Phase 8 --- Feed-Forward Network
+
+**Status: Completed**
+
+The Transformer feed-forward component was implemented:
+
+```text
+Input
+  ↓
+Linear Projection
   ↓
 ReLU
   ↓
-Prediction
-  ↓
-Loss
-  ↓
-Backpropagation
-```
-
-The experiment learns the relationship:
-
-```text
-y = ReLU(2 × x)
-```
-
-and converges to approximately:
-
-```text
-weight = 2
-bias   = 0
-```
-
-### `06_multi_layer_training.py`
-
-Demonstrates complete end-to-end training through multiple layers:
-
-```text
-Input
-  ↓
-Layer 1 → ReLU
-  ↓
-Layer 2 → Linear
-  ↓
-Prediction
-  ↓
-Loss
-  ↓
-Backpropagation
-  ↓
-Update both layers
-```
-
-The experiment learns:
-
-```text
-y = 2 × x + 1
-```
-
-The training loss converges to approximately zero and the final
-predictions match all training targets.
-
-### `05_multiple_layers.py`
-
-Demonstrates forward and backward propagation through two layers:
-
-```text
-Input
-  ↓
-Layer 1
-  ↓
-Layer 2
+Linear Projection
   ↓
 Output
 ```
 
-Backward propagation runs in reverse:
+The implementation includes:
 
-```text
-Output Gradient
-  ↓
-Layer 2
-  ↓
-Layer 1
-  ↓
-Input Gradient
-```
+- Input weights
+- Input biases
+- Output weights
+- Output biases
+- ReLU activation
+- Forward propagation
+- Backward propagation
+- Parameter gradients
+- Input gradients
 
-The experiment validates the multi-layer mathematical flow.
+Gradient behavior was validated through unit tests.
 
-## Test Status
+### Phase 9 --- Layer Normalization
 
-The core implementation is covered by automated tests.
+**Status: Completed**
 
-Current validated areas:
+Layer normalization was implemented from first principles.
 
-```text
-Activation            ✓
-Neuron                ✓
-Layer                 ✓
-Network               ✓
-Loss                  ✓
-Optimizer             ✓
-Trainer               ✓
-Multi-layer           ✓
-Gradient checking     ✓
-```
-
-The full test suite is passing after the gradient-checking milestone.
-
-## Current Architecture
-
-```text
-                         Network
-                            │
-                ┌───────────┴───────────┐
-                ↓                       ↓
-             Layer 1                 Layer 2
-                ↓                       ↓
-             Neurons                  Neurons
-                ↓                       ↓
-             ReLU                 Linear Output
-                │                       │
-                └──────────→────────────┘
-```
-
-Training flow:
+Conceptually:
 
 ```text
 Input
   ↓
-Network.forward()
+Mean
   ↓
-Prediction
+Variance
   ↓
-Loss
+Normalize
   ↓
-Loss Gradient
-  ↓
-Network.backward()
-  ↓
-Gradients
-  ↓
-Trainer
-  ↓
-GradientDescent
-  ↓
-Updated Weights + Biases
+Gamma × normalized + Beta
 ```
 
-Gradient verification flow:
+The implementation includes:
+
+- Mean calculation
+- Variance calculation
+- Normalization
+- Learnable gamma
+- Learnable beta
+- Forward propagation
+- Backward propagation
+- Parameter gradients
+- Input gradients
+- Numerical gradient verification
+
+### Phase 10 --- Residual Connections
+
+**Status: Completed**
+
+Residual connections were implemented:
 
 ```text
-Model Input
-    │
-    ├──────────────→ Analytical Gradient
-    │                       │
-    │                  backward()
-    │
-    └──────────────→ Numerical Gradient
-                            │
-                       perturb input
-                       calculate loss
-                            │
-                            ↓
-                       GradientChecker
-                            │
-                            ↓
-                         Compare
+Input ──────────────────┐
+  │                     │
+  ↓                     │
+Sublayer                │
+  │                     │
+  └────────── + ←───────┘
+              ↓
+           Output
 ```
 
-## Next Immediate Step
+The backward implementation preserves both gradient paths.
 
-The neural-network foundation and embedding-based character language-model foundation are complete.
+This introduced the residual architecture used throughout modern
+Transformer networks.
 
-The next major concept is **Self-Attention**.
+### Phase 11 --- Transformer Block
 
-Current path:
+**Status: Completed**
+
+The major Transformer block components were combined.
+
+The implemented architecture is:
 
 ```text
-Character Language Model
-        ↓
-Context
-        ↓
-Learned Embeddings
-        ↓
+Input
+  ↓
 Self-Attention
-        ↓
-Multi-Head Attention
-        ↓
+  ↓
+Residual Connection
+  ↓
+Layer Normalization
+  ↓
+Feed-Forward Network
+  ↓
+Residual Connection
+  ↓
+Layer Normalization
+  ↓
+Output
+```
+
+The Transformer block supports:
+
+- Self-attention
+- Residual connections
+- Layer normalization
+- Feed-forward network
+- Forward propagation
+- Backward propagation
+- Gradient path tracking
+- Parameter gradients
+
+The complete block is covered by automated tests.
+
+### Phase 12 --- Small Language Model
+
+**Status: Completed**
+
+The project reached its first complete end-to-end language model.
+
+Architecture:
+
+```text
+Token IDs
+    ↓
+Token Embeddings
+    ↓
+Positional Embeddings
+    ↓
 Transformer Block
+    ↓
+Output Projection
+    ↓
+Logits
+    ↓
+Softmax
+    ↓
+Next-Token Prediction
+```
+
+The model includes:
+
+- Token embeddings
+- Positional embeddings
+- Self-attention
+- Feed-forward network
+- Residual connections
+- Layer normalization
+- Transformer block
+- Output projection
+- Softmax
+- Cross-entropy loss
+- Backpropagation
+- Parameter updates
+
+The complete model is covered by unit tests.
+
+---
+
+## 5. Small Language Model Experiment
+
+The final educational experiment trains the model on:
+
+```text
+he → l
+el → l
+ll → o
+```
+
+The model successfully learned all three context-dependent predictions.
+
+Final training result:
+
+```text
+Final Loss ≈ 0.000203
+```
+
+Predictions:
+
+```text
+Input: he
+Target: l
+Prediction: l
+Confidence: ≈ 99.9864%
+
+Input: el
+Target: l
+Prediction: l
+Confidence: ≈ 99.9888%
+
+Input: ll
+Target: o
+Prediction: o
+Confidence: ≈ 99.9638%
+```
+
+This confirms that the complete training pipeline is functioning:
+
+```text
+Forward Pass
+     ↓
+Loss
+     ↓
+Backpropagation
+     ↓
+Gradients
+     ↓
+Parameter Updates
+     ↓
+Improved Predictions
+```
+
+---
+
+## 6. Current Architecture
+
+The completed educational architecture is:
+
+```text
+                    Token IDs
+                       ↓
+                Token Embeddings
+                       ↓
+             Positional Embeddings
+                       ↓
+              Transformer Block
+                       │
+          ┌────────────┴────────────┐
+          ↓                         ↓
+    Self-Attention            Feed-Forward
+          ↓                         ↓
+       Residual                  Residual
+          ↓                         ↓
+    LayerNorm                  LayerNorm
+          └────────────┬────────────┘
+                       ↓
+                Output Projection
+                       ↓
+                     Logits
+                       ↓
+                    Softmax
+                       ↓
+              Next-Token Prediction
+```
+
+---
+
+## 7. Testing Strategy
+
+Important mathematical components have dedicated unit tests.
+
+Validated areas include:
+
+```text
+Neuron                 ✓
+Layer                  ✓
+Network                ✓
+Loss                   ✓
+Optimizer              ✓
+Trainer                ✓
+Activation             ✓
+Gradient Checking      ✓
+Embedding              ✓
+Self-Attention         ✓
+Positional Embedding   ✓
+Feed-Forward           ✓
+Layer Normalization    ✓
+Residual Connection    ✓
+Transformer Block      ✓
+Small Language Model   ✓
+```
+
+The project also uses numerical gradient checking for important
+backpropagation implementations.
+
+---
+
+## 8. Experiment Tracking
+
+Experiments are maintained under:
+
+```text
+experiments/
+```
+
+The experiments progressively demonstrate:
+
+```text
+Basic Learning
+      ↓
+Neural Networks
+      ↓
+Multi-Layer Training
+      ↓
+Character Prediction
+      ↓
+Context Prediction
+      ↓
+Embeddings
+      ↓
+Attention
+      ↓
+Positional Information
+      ↓
+Transformer Components
+      ↓
+Small Language Model
+```
+
+The latest experiment is:
+
+```text
+experiments/12_small_language_model.py
+```
+
+---
+
+## 9. Repository Structure
+
+The current project is organized around three primary areas:
+
+```text
+llm-from-scratch/
+│
+├── docs/
+├── experiments/
+├── src/
+│   └── llm_from_scratch/
+├── tests/
+├── README.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── pyproject.toml
+```
+
+The implementation lives under:
+
+```text
+src/llm_from_scratch/
+```
+
+Experiments live under:
+
+```text
+experiments/
+```
+
+Automated tests live under:
+
+```text
+tests/
+```
+
+Learning documentation lives under:
+
+```text
+docs/
+```
+
+---
+
+## 10. Project Status
+
+The original learning objective has been achieved.
+
+The project has progressed from individual mathematical components to a
+complete trainable Transformer-based language model implemented from
+scratch.
+
+Current milestone:
+
+```text
+LLM From Scratch — Small Language Model
+                    ↓
+                 COMPLETED
+```
+
+The repository is now ready for final documentation cleanup, release
+preparation, and publication of the completed implementation.
+
+---
+
+## 11. What We Learned
+
+The project progressively removed the abstraction around modern LLMs.
+
+We started with:
+
+```text
+Weight
+Bias
+Neuron
+```
+
+and progressed through:
+
+```text
+Gradient
+Backpropagation
+Layer
+Network
+Embeddings
+Attention
+LayerNorm
+Residuals
+Transformer
+```
+
+until reaching:
+
+```text
+Small Language Model
+```
+
+The most important lesson is that an LLM is not a single mysterious
+component.
+
+It is a composition of understandable mathematical operations:
+
+```text
+Represent
+   ↓
+Transform
+   ↓
+Attend
+   ↓
+Normalize
+   ↓
+Transform
+   ↓
+Predict
+   ↓
+Measure Error
+   ↓
+Backpropagate
+   ↓
+Update
+```
+
+---
+
+## 12. Next Direction
+
+The `llm-from-scratch` learning milestone is now complete.
+
+Future work should be treated as separate projects or experiments rather
+than continuing to expand the original learning roadmap indefinitely.
+
+Potential future directions include:
+
+```text
+NumPy implementation
         ↓
-Tiny Transformer
+PyTorch implementation
         ↓
-Tiny LLM
+Larger Transformer
+        ↓
+Dataset-based training
+        ↓
+Text generation
 ```
 
-The immediate goal is to implement a small single-head self-attention component from first principles and verify its forward and backward behavior before introducing multi-head attention.
+These are optional extensions rather than requirements for completing
+the current project.
 
-# 25. Suggested Git Commit Sequence
+---
 
-Completed/active milestones should use small, meaningful commits:
+## 13. Definition of Success
 
-```text
-chore: initialize llm from scratch project
-feat: implement basic neuron and forward pass
-feat: implement mean squared error loss
-feat: implement gradient descent optimizer
-feat: implement backpropagation
-feat: add first training loop
-test: add neural network core tests
-feat: add multi neuron network
-feat: add activation function
-feat: add multi-layer network
-feat: integrate network training
-docs: document multi-layer neural network architecture
-```
+The project succeeded if we can move from:
 
-For completed milestones, keep implementation and documentation
-commits separate when practical.
+> "I can use an LLM."
 
-For the multi-layer network:
+to:
 
-```text
-feat: implement multi-layer neural network training
-docs: document multi-layer neural network architecture
-```
+> "I understand how an LLM works internally."
 
-For gradient verification:
+and ultimately:
 
-```text
-feat: add gradient checking
-docs: document gradient verification
-```
+> "I can implement the fundamental components of a Transformer language
+> model and explain how they work together."
 
-## Final Direction
-
-For now:
-
-```text
-PUBLIC
-llm-from-scratch
-       ↓
-Learn everything from first principles
-
-PRIVATE
-ndc-rxnorm-intelligence
-       ↓
-Build proprietary healthcare intelligence
-
-FUTURE
-gita-llm
-       ↓
-Apply the learned LLM technology to the Gita project
-```
-
-The public project is the **laboratory**.
-
-The private NDC/RxNorm project is the **product**.
-
-The Gita project can become the **creative application** of everything
-we learn.
+That milestone has now been achieved.

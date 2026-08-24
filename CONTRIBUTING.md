@@ -2,7 +2,9 @@
 
 This document defines the development conventions for the **LLM From Scratch** project.
 
-The goal is to keep the repository simple, consistent, educational, and easy to understand as the project grows from a tiny Python model into a small Transformer implementation.
+The project is an educational implementation of neural networks,
+attention, Transformer components, and a small language model from
+first principles.
 
 ---
 
@@ -15,10 +17,7 @@ main
   │
   └── dev
        │
-       ├── feature/01-linear-learning
-       ├── feature/02-bias
-       ├── feature/03-multi-neuron
-       └── ...
+       └── feature/<number>-<short-description>
 ```
 
 ## `main`
@@ -27,344 +26,76 @@ main
 
 Rules:
 
-* Must contain working code.
-* Documentation should be reasonably complete.
-* No experimental/broken implementation should be merged directly.
-* Avoid direct development on `main`.
-
----
+- Must contain working code.
+- Documentation should be reasonably complete.
+- No experimental or broken implementation should be merged directly.
+- Avoid direct development on `main`.
 
 ## `dev`
 
 `dev` is the integration branch.
 
-It contains the latest completed development work before it is promoted to `main`.
-
 Rules:
 
-* Feature branches start from `dev`.
-* Completed features are merged into `dev`.
-* `dev` should remain buildable and testable.
-* Experimental work belongs in feature branches.
-
----
+- Feature branches start from `dev`.
+- Completed features are merged into `dev`.
+- `dev` should remain buildable and testable.
 
 ## Feature Branches
 
-Every meaningful development step gets its own feature branch.
-
-Branch naming pattern:
+Use:
 
 ```text
 feature/<number>-<short-description>
 ```
 
-Example:
+Examples:
 
 ```text
-feature/01-linear-learning
+feature/09-positional-embedding
+feature/10-transformer-block
+feature/11-small-language-model
 ```
 
 ---
 
-# 2. Feature Branch Roadmap
+# 2. Feature Branch Workflow
 
-The initial development sequence is:
+Every meaningful development step follows this workflow.
 
-```text
-feature/01-linear-learning
-feature/02-bias
-feature/03-multi-neuron
-feature/04-activation-functions
-feature/05-training-loop
-feature/06-character-prediction
-feature/07-tokenizer
-feature/08-embeddings
-feature/09-self-attention
-feature/10-transformer
-```
-
-## Feature 01 — Linear Learning
-
-```text
-feature/01-linear-learning
-```
-
-Goal:
-
-```text
-Input
- ↓
-Neuron
- ↓
-Prediction
- ↓
-Loss
- ↓
-Gradient
- ↓
-Parameter Update
-```
-
-Target:
-
-```text
-y = 3x
-```
-
----
-
-## Feature 02 — Bias
-
-```text
-feature/02-bias
-```
-
-Goal:
-
-```text
-y = 3x + 2
-```
-
-Introduce:
-
-* Bias
-* Bias gradient
-* Multiple trainable parameters
-
----
-
-## Feature 03 — Multi-Neuron
-
-```text
-feature/03-multi-neuron
-```
-
-Goal:
-
-Move from one neuron to a small neural layer.
-
-Introduce:
-
-* Multiple neurons
-* Layers
-* Vectors
-* Multiple parameters
-
----
-
-## Feature 04 — Activation Functions
-
-```text
-feature/04-activation-functions
-```
-
-Goal:
-
-Introduce non-linear activation.
-
-Initial activation:
-
-```text
-ReLU
-```
-
-Later:
-
-```text
-Sigmoid
-Tanh
-GELU
-```
-
----
-
-## Feature 05 — Training Loop
-
-```text
-feature/05-training-loop
-```
-
-Goal:
-
-Create a reusable training workflow.
-
-```text
-Forward
- ↓
-Loss
- ↓
-Backward
- ↓
-Gradient
- ↓
-Update
- ↓
-Repeat
-```
-
----
-
-## Feature 06 — Character Prediction
-
-```text
-feature/06-character-prediction
-```
-
-Goal:
-
-Move from numerical data to text.
-
-```text
-characters
- ↓
-character IDs
- ↓
-sequence
- ↓
-next-character prediction
-```
-
----
-
-## Feature 07 — Tokenizer
-
-```text
-feature/07-tokenizer
-```
-
-Goal:
-
-Build a tokenizer and vocabulary.
-
-```text
-Text
- ↓
-Tokens
- ↓
-Token IDs
-```
-
----
-
-## Feature 08 — Embeddings
-
-```text
-feature/08-embeddings
-```
-
-Goal:
-
-Convert token IDs into learned vectors.
-
-```text
-Token ID
- ↓
-Embedding Matrix
- ↓
-Vector
-```
-
----
-
-## Feature 09 — Self-Attention
-
-```text
-feature/09-self-attention
-```
-
-Goal:
-
-Implement self-attention from scratch.
-
-```text
-Input
- ↓
-Query / Key / Value
- ↓
-Attention Scores
- ↓
-Weighted Values
- ↓
-Context
-```
-
-Start with single-head attention.
-
----
-
-## Feature 10 — Transformer
-
-```text
-feature/10-transformer
-```
-
-Goal:
-
-Build the first complete Transformer block.
-
-```text
-Input
- ↓
-Self-Attention
- ↓
-Residual Connection
- ↓
-Layer Normalization
- ↓
-Feed Forward
- ↓
-Residual Connection
- ↓
-Layer Normalization
-```
-
----
-
-# 3. Feature Branch Workflow
-
-Every feature follows this workflow.
-
-## Step 1 — Start from `dev`
+## Start from `dev`
 
 ```bash
 git checkout dev
 git pull origin dev
 ```
 
-## Step 2 — Create the feature branch
+## Create a feature branch
 
 ```bash
-git checkout -b feature/01-linear-learning
+git checkout -b feature/<number>-<short-description>
 ```
 
-## Step 3 — Develop
+## Develop
 
-Implement only the scope of the feature.
+Implement only the scope of the feature and avoid unrelated changes.
 
-Avoid unrelated changes.
+## Test
 
-## Step 4 — Test
-
-Run:
+Run the relevant test suite:
 
 ```bash
-pytest
+pytest -v
 ```
 
-Also run:
+If Ruff is configured:
 
 ```bash
 ruff check .
-```
-
-If formatting is configured:
-
-```bash
 ruff format .
 ```
 
-## Step 5 — Review
+## Review
 
 Before committing:
 
@@ -375,48 +106,46 @@ git diff
 
 Check:
 
-* No debug code
-* No secrets
-* No unnecessary files
-* Tests pass
-* Documentation is updated if needed
+- No debug code
+- No secrets
+- No unnecessary files
+- Tests pass
+- Documentation is updated when needed
 
-## Step 6 — Commit
+## Commit
 
-Use the project's commit convention.
-
-Example:
+Use the project's Conventional Commit style:
 
 ```bash
 git add .
-git commit -m "feat: implement linear learning"
+git commit -m "feat: implement <feature>"
 ```
 
-## Step 7 — Push
+## Push
 
 ```bash
-git push -u origin feature/01-linear-learning
+git push -u origin feature/<number>-<short-description>
 ```
 
-## Step 8 — Pull Request
+## Pull Request
 
 Create:
 
 ```text
-feature/01-linear-learning
-        ↓
-       dev
+feature/<number>-<short-description>
+                ↓
+               dev
 ```
 
 After review and successful tests, merge into `dev`.
 
 ---
 
-# 4. Pull Request Rules
+# 3. Pull Request Rules
 
 Each PR should represent one logical learning milestone.
 
-A PR should answer:
+A PR should make clear:
 
 ```text
 What did we build?
@@ -426,27 +155,13 @@ How was it tested?
 What did we learn?
 ```
 
-Avoid combining unrelated features.
-
-For example, this is good:
-
-```text
-feature/01-linear-learning
-```
-
-This is not recommended:
-
-```text
-feature/01-linear-learning-and-transformer-and-tokenizer
-```
+Avoid combining unrelated features into one PR.
 
 ---
 
-# 5. Commit Convention
+# 4. Commit Convention
 
-Use a simple Conventional Commit style.
-
-Format:
+Use a simple Conventional Commit style:
 
 ```text
 <type>: <description>
@@ -467,38 +182,20 @@ chore     Tooling/configuration
 Examples:
 
 ```text
-feat: implement basic neuron
-feat: add gradient descent optimizer
-feat: implement backpropagation
-test: add neuron gradient tests
-docs: document linear learning experiment
+feat: implement self attention
+feat: add transformer block
+feat: add trainable small language model
+test: add layer normalization tests
+docs: update learning roadmap
 fix: correct weight gradient calculation
-refactor: separate training loop from model
-perf: optimize matrix multiplication
+refactor: simplify training loop
 ```
 
-Keep commit messages:
-
-* Short
-* Specific
-* Written in imperative style
-* Focused on one logical change
-
-Prefer:
-
-```text
-feat: implement mean squared error
-```
-
-Instead of:
-
-```text
-updated some files
-```
+Keep commit messages short, specific, and focused on one logical change.
 
 ---
 
-# 6. Python Version
+# 5. Python Version and Style
 
 Target:
 
@@ -506,263 +203,106 @@ Target:
 Python 3.11+
 ```
 
-Use modern Python syntax where it improves readability.
+Follow standard Python conventions:
 
-Example:
+- Clear naming
+- Small functions
+- Type hints
+- Readable code
+- Minimal magic
+- Prefer clarity over cleverness
+
+Use `PascalCase` for classes:
 
 ```python
-def calculate_loss(
-    prediction: float,
-    target: float,
-) -> float:
+class TransformerBlock:
     ...
 ```
 
----
-
-# 7. Python Style
-
-Follow standard Python conventions.
-
-Primary principles:
-
-* PEP 8
-* Clear naming
-* Small functions
-* Explicit types
-* Minimal magic
-* Prefer readability over cleverness
-
----
-
-# 8. Naming Convention
-
-## Classes
-
-Use `PascalCase`.
-
-```python
-class Neuron:
-    ...
-
-class DenseLayer:
-    ...
-
-class NeuralNetwork:
-    ...
-
-class GradientDescent:
-    ...
-```
-
-## Functions
-
-Use `snake_case`.
+Use `snake_case` for functions and variables:
 
 ```python
 def calculate_loss():
     ...
-
-def forward():
-    ...
-
-def backward():
-    ...
 ```
 
-## Variables
-
-Use descriptive `snake_case`.
-
-```python
-learning_rate
-prediction
-target
-gradient
-weight
-bias
-```
-
-Avoid:
-
-```python
-x1
-x2
-tmp
-foo
-bar
-```
-
-unless the variable has a clear mathematical purpose.
+Use type hints for public functions and important methods.
 
 ---
 
-# 9. Type Hints
-
-Use type hints for public functions and important internal methods.
-
-Example:
-
-```python
-def forward(
-    self,
-    input_value: float,
-) -> float:
-    ...
-```
-
-For collections:
-
-```python
-def predict(
-    self,
-    inputs: list[float],
-) -> list[float]:
-    ...
-```
-
-Type hints should improve understanding, not create unnecessary complexity.
-
----
-
-# 10. Dataclasses
-
-Use `dataclass` when a class primarily represents structured data.
-
-Example:
-
-```python
-from dataclasses import dataclass
-
-
-@dataclass
-class TrainingResult:
-    epochs: int
-    initial_loss: float
-    final_loss: float
-```
-
-Avoid using dataclasses simply because they are available.
-
----
-
-# 11. Docstrings
-
-Public classes and important methods should have concise docstrings.
-
-Example:
-
-```python
-class Neuron:
-    """A single trainable neuron."""
-
-    def forward(self, input_value: float) -> float:
-        """Calculate the neuron output."""
-        ...
-```
-
-Don't write documentation that merely repeats the function name.
-
----
-
-# 12. Code Organization
+# 6. Code Organization
 
 Keep responsibilities separated.
 
-Recommended:
+The main implementation areas are:
 
 ```text
-core/
-├── neuron.py
-├── layer.py
-├── network.py
-├── loss.py
-├── gradient.py
-├── optimizer.py
-└── training.py
+src/llm_from_scratch/
+├── core/
+├── language/
+└── models/
 ```
 
-Responsibilities:
+Use the appropriate area for each concept:
 
 ```text
-Neuron
-→ Individual trainable computation
+core
+→ Reusable neural-network and Transformer components
 
-Layer
-→ Collection of neurons
+language
+→ Language-specific sequence and embedding utilities
 
-Network
-→ Collection of layers
-
-Loss
-→ Measures prediction error
-
-Gradient
-→ Gradient calculations
-
-Optimizer
-→ Parameter updates
-
-Trainer
-→ Training workflow
+models
+→ Complete trainable models
 ```
 
-Avoid putting everything into one large file.
+Experiments belong in:
+
+```text
+experiments/
+```
+
+Tests belong in:
+
+```text
+tests/
+```
+
+Documentation belongs in:
+
+```text
+docs/
+```
+
+Avoid putting unrelated responsibilities into one large file.
 
 ---
 
-# 13. Separation of Concerns
+# 7. Educational Transparency
 
-A model should not know how the training loop works.
+This is a learning project.
 
-Avoid:
+Prefer explicit code when it makes the mathematics easier to understand.
 
-```python
-model.train_for_100_epochs()
-```
-
-Prefer:
+For example:
 
 ```python
-trainer.fit(
-    model,
-    dataset,
-)
+weighted_input = weight * input_value
+biased_input = weighted_input + bias
+prediction = activation(biased_input)
 ```
 
-This keeps:
+is preferable to hiding the complete operation behind unnecessary
+abstraction.
 
-```text
-Model
-```
-
-separate from:
-
-```text
-Training process
-```
+Mathematical notation is encouraged in comments and documentation when it
+helps explain the implementation.
 
 ---
 
-# 14. Mathematical Code
+# 8. Mathematical Code
 
 Mathematical code should favor clarity.
-
-Prefer:
-
-```python
-prediction = weight * input_value + bias
-```
-
-over:
-
-```python
-y = w * x + b
-```
-
-inside production implementation code.
-
-However, mathematical notation is encouraged in comments and documentation when explaining the corresponding formula.
 
 Example:
 
@@ -771,138 +311,98 @@ Example:
 prediction = weight * input_value + bias
 ```
 
-This gives us both:
-
-```text
-Mathematical notation
-+
-Readable code
-```
-
----
-
-# 15. Avoid Premature Abstraction
-
-Do not build a generalized framework before we understand the underlying problem.
-
-For example, don't immediately create:
-
-```text
-BaseTensor
-AbstractOptimizer
-GenericComputationGraph
-UniversalLayerFactory
-```
-
-unless the experiment actually requires them.
-
-Start simple.
-
-Refactor when a real need appears.
-
----
-
-# 16. Educational Transparency
-
-This repository is designed for learning.
-
-Prefer explicit code over highly compressed implementations.
-
-Prefer:
-
-```python
-weighted_input = weight * input_value
-biased_input = weighted_input + bias
-prediction = activation(biased_input)
-```
-
-over:
-
-```python
-return activation(weight * x + b)
-```
-
-when the expanded version makes the learning process clearer.
-
-Production optimization can come later.
-
----
-
-# 17. Comments
-
-Comments should explain **why**, not merely repeat **what**.
-
-Bad:
-
-```python
-# Multiply weight by input
-weighted_input = weight * input_value
-```
-
-Better:
-
-```python
-# The weighted input determines how strongly this feature
-# contributes to the neuron's output.
-weighted_input = weight * input_value
-```
-
-Mathematical explanations are encouraged when they help understanding.
-
----
-
-# 18. Tests
-
-Every core mathematical component should have tests.
-
-Example:
-
-```text
-tests/
-├── test_neuron.py
-├── test_loss.py
-├── test_gradient.py
-├── test_optimizer.py
-└── test_training.py
-```
-
-Tests should verify both:
-
-```text
-Expected behavior
-```
-
-and:
-
-```text
-Mathematical correctness
-```
-
----
-
-# 19. Gradient Testing
-
-Gradient calculations deserve special attention.
+Important mathematical operations should have tests.
 
 Where practical, compare:
 
 ```text
-Analytical gradient
+Analytical Gradient
+        vs
+Numerical Gradient
 ```
 
-against:
+to verify backpropagation.
 
-```text
-Numerical gradient
-```
-
-This helps detect errors in backpropagation.
-
-A small gradient error can cause the entire training process to fail.
+A small gradient error can prevent the entire training process from
+learning correctly.
 
 ---
 
-# 20. Experiment Code
+# 9. Separation of Concerns
+
+Keep model computation separate from the training workflow.
+
+Prefer:
+
+```python
+model.forward(inputs)
+loss = model.loss(target)
+model.backward(target)
+```
+
+with training logic handled by the experiment or training workflow.
+
+Avoid hiding a complete training process inside a model method unless the
+abstraction is genuinely useful.
+
+---
+
+# 10. Avoid Premature Abstraction
+
+Do not build a generalized framework before the underlying problem is
+understood.
+
+Start with simple implementations.
+
+Refactor only when a real need appears.
+
+The project values:
+
+```text
+Correctness
++
+Understanding
++
+Readability
+```
+
+over unnecessary abstraction.
+
+---
+
+# 11. Tests
+
+Every important mathematical component should have tests.
+
+Tests should verify:
+
+```text
+Expected behavior
++
+Mathematical correctness
+```
+
+Important areas include:
+
+- Forward calculations
+- Backward calculations
+- Parameter gradients
+- Input gradients
+- Gradient paths
+- Shape validation
+- Numerical gradient checks where appropriate
+
+Run:
+
+```bash
+pytest -v
+```
+
+before opening a PR.
+
+---
+
+# 12. Experiment Code
 
 Experiment scripts belong in:
 
@@ -910,86 +410,45 @@ Experiment scripts belong in:
 experiments/
 ```
 
-Example:
+Experiments should make the learning process visible.
 
-```text
-experiments/
-└── 01_linear_learning.py
-```
-
-Experiment code may be more verbose than library code because it should make the learning process visible.
-
-For example:
+They may include:
 
 ```python
 print(f"Epoch: {epoch}")
 print(f"Loss: {loss}")
-print(f"Weight: {weight}")
 ```
 
-This is acceptable in experiment scripts.
+This is appropriate for experiments even when such output would not belong
+in reusable library code.
+
+Each experiment should make clear:
+
+1. What is being learned.
+2. What mathematics is involved.
+3. What the implementation does.
+4. What happened during training.
+5. What was learned from the result.
 
 ---
 
-# 21. Production Code vs Experiment Code
+# 13. Dependencies
 
-### Core implementation
+Do not add dependencies without a clear reason.
 
-Focus on:
+Keep the project lightweight.
 
-```text
-Correctness
-Reusability
-Testing
-Clarity
-```
+The core learning implementation should remain understandable without
+depending on a large machine-learning framework.
 
-### Experiment scripts
-
-Focus on:
-
-```text
-Visibility
-Learning
-Measurements
-Observations
-```
-
-Do not over-engineer experiments.
+When a new dependency is necessary, document its purpose.
 
 ---
 
-# 22. Dependencies
+# 14. Reproducibility
 
-Do not add packages without a reason.
-
-Initial dependencies:
-
-```text
-Python standard library
-pytest
-ruff
-```
-
-Later:
-
-```text
-NumPy
-```
-
-Later:
-
-```text
-PyTorch
-```
-
-Each dependency should have a documented purpose.
-
----
-
-# 23. Reproducibility
-
-Experiments involving randomness should use an explicit seed.
+Experiments involving randomness should use an explicit seed where
+reproducibility matters.
 
 Example:
 
@@ -999,7 +458,7 @@ import random
 random.seed(42)
 ```
 
-When an experiment depends on randomness, record:
+When appropriate, record:
 
 ```text
 Random seed
@@ -1008,113 +467,32 @@ Hyperparameters
 Model configuration
 ```
 
-This allows us to reproduce results.
-
 ---
 
-# 24. Configuration
-
-Avoid scattering magic values throughout the code.
-
-Instead of:
-
-```python
-weight -= 0.01 * gradient
-```
-
-prefer:
-
-```python
-learning_rate = 0.01
-
-weight -= learning_rate * gradient
-```
-
-Later, configuration can be moved into dedicated configuration objects/files if needed.
-
----
-
-# 25. Error Handling
-
-Keep error handling simple during the early stages.
-
-Validate inputs when invalid values could make debugging difficult.
-
-Example:
-
-```python
-if learning_rate <= 0:
-    raise ValueError("learning_rate must be positive")
-```
-
-Don't hide errors with broad exception handling.
-
-Avoid:
-
-```python
-try:
-    ...
-except Exception:
-    pass
-```
-
----
-
-# 26. Performance
+# 15. Performance
 
 Do not optimize prematurely.
 
-The project has two stages:
+Use this order:
 
 ```text
-Stage 1
-Understand correctness
+Correctness
+    ↓
+Testing
+    ↓
+Measurement
+    ↓
+Optimization
 ```
 
-then:
-
-```text
-Stage 2
-Measure performance
-```
-
-Only optimize after measurement shows a meaningful bottleneck.
-
-Later we will compare:
-
-```text
-Python
- ↓
-NumPy
- ↓
-PyTorch
- ↓
-C++
- ↓
-Rust
- ↓
-GPU
-```
+Optimize only after a real bottleneck has been identified.
 
 ---
 
-# 27. Documentation Updates
+# 16. Documentation
 
-When a feature changes an important concept, update the relevant documentation.
-
-For example:
-
-```text
-Feature
-   ↓
-Implementation
-   ↓
-Tests
-   ↓
-Experiment
-   ↓
-Documentation
-```
+When a feature introduces an important concept, update the relevant
+documentation.
 
 Possible files:
 
@@ -1125,165 +503,12 @@ docs/concepts.md
 docs/experiments.md
 ```
 
----
-
-# 28. Definition of Done
-
-A feature is considered complete when:
-
-* [ ] Implementation is complete
-* [ ] Tests are added
-* [ ] Tests pass
-* [ ] Code passes Ruff
-* [ ] Experiment works
-* [ ] Relevant documentation is updated
-* [ ] No debug code remains
-* [ ] No secrets/private data are committed
-* [ ] Git diff has been reviewed
-* [ ] Commit message follows project convention
-* [ ] Pull request is ready
+The documentation should reflect the implementation that actually exists,
+not an outdated future plan.
 
 ---
 
-# 29. Recommended Feature Completion Workflow
-
-```text
-Create branch
-     ↓
-Implement
-     ↓
-Test
-     ↓
-Experiment
-     ↓
-Document
-     ↓
-Review diff
-     ↓
-Commit
-     ↓
-Push
-     ↓
-Pull Request
-     ↓
-Merge into dev
-     ↓
-Delete feature branch
-```
-
----
-
-# 30. Branch Lifecycle Example
-
-For the first feature:
-
-```bash
-git checkout dev
-git pull origin dev
-
-git checkout -b feature/01-linear-learning
-```
-
-After implementation:
-
-```bash
-pytest
-ruff check .
-ruff format .
-```
-
-Then:
-
-```bash
-git add .
-git commit -m "feat: implement linear learning"
-git push -u origin feature/01-linear-learning
-```
-
-Create PR:
-
-```text
-feature/01-linear-learning
-             ↓
-            dev
-```
-
-After merge:
-
-```bash
-git checkout dev
-git pull origin dev
-
-git branch -d feature/01-linear-learning
-```
-
-Then start:
-
-```bash
-git checkout -b feature/02-bias
-```
-
----
-
-# 31. Release Flow
-
-When a meaningful collection of features is complete:
-
-```text
-dev
- ↓
-Pull Request
- ↓
-main
-```
-
-Example:
-
-```text
-feature/01
-feature/02
-feature/03
-       ↓
-      dev
-       ↓
-     main
-```
-
-`main` should represent a stable milestone of the learning journey.
-
----
-
-# 32. Golden Rules
-
-Keep these rules simple:
-
-### 1. One feature branch = one learning milestone
-
-```text
-feature/01-linear-learning
-```
-
-should teach one major concept.
-
-### 2. Understand before abstracting
-
-Don't hide the mathematics behind frameworks too early.
-
-### 3. Correctness before performance
-
-First make it correct.
-
-Then make it fast.
-
-### 4. Measure before optimizing
-
-Use actual measurements.
-
-### 5. Document what we learn
-
-The Git history and documentation should tell the story of the project.
-
-### 6. Keep the public repository safe
+# 17. Security and Repository Hygiene
 
 Never commit:
 
@@ -1293,19 +518,60 @@ API keys
 Private datasets
 Patient information
 Customer information
-Production configuration
+Production secrets
 Proprietary business logic
 ```
 
-### 7. Keep the code boring
+Before committing, review:
 
-Readable code is more valuable than clever code in a learning project.
+```bash
+git status
+git diff
+```
 
 ---
 
-# 33. Project Development Philosophy
+# 18. Definition of Done
 
-The project follows this progression:
+A feature is complete when:
+
+- [ ] Implementation is complete
+- [ ] Tests are added where appropriate
+- [ ] Tests pass
+- [ ] Code quality checks pass when configured
+- [ ] Experiment works when applicable
+- [ ] Relevant documentation is updated
+- [ ] No debug code remains
+- [ ] No secrets or private data are committed
+- [ ] Git diff has been reviewed
+- [ ] Commit message follows project convention
+- [ ] Pull request is ready
+
+---
+
+# 19. Release Flow
+
+When a meaningful collection of features is complete:
+
+```text
+feature branch
+      ↓
+     dev
+      ↓
+ Pull Request
+      ↓
+    main
+      ↓
+  Git tag / release
+```
+
+`main` should represent a stable milestone of the learning journey.
+
+---
+
+# 20. Project Development Philosophy
+
+The project follows:
 
 ```text
 Understand
@@ -1323,22 +589,8 @@ Document
 Optimize
 ```
 
-And eventually:
+The objective is not merely to build a language model.
 
-```text
-Pure Python
-      ↓
-NumPy
-      ↓
-PyTorch
-      ↓
-C++
-      ↓
-Rust
-      ↓
-GPU / CUDA
-```
-
-The objective is not merely to build an LLM.
-
-The objective is to understand **why it works, how it learns, and what happens underneath the frameworks we normally use.**
+The objective is to understand **why it works, how it learns, and what
+happens underneath the frameworks normally used to build machine-learning
+systems.**
