@@ -521,3 +521,5 @@ class SmallLanguageModel:
                 learning_rate
                 * layer_norm.beta_gradients[index]
             )
+
+# https://www.youtube.com/watch?v=Uv_w96W0roo
