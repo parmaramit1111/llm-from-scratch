@@ -1,0 +1,117 @@
+"""
+Experiment: Activation
+
+Demonstrate how ReLU affects a trainable neuron.
+
+Target relationship:
+
+    y = ReLU(2 × x)
+
+Therefore:
+
+    x = -3 → y = 0
+    x = -2 → y = 0
+    x = -1 → y = 0
+    x =  0 → y = 0
+    x =  1 → y = 2
+    x =  2 → y = 4
+    x =  3 → y = 6
+"""
+
+from llm_from_scratch.core.activation import Activation
+from llm_from_scratch.core.layer import Layer
+from llm_from_scratch.core.loss import MeanSquaredError
+from llm_from_scratch.core.network import Network
+from llm_from_scratch.core.neuron import Neuron
+from llm_from_scratch.core.optimizer import GradientDescent
+from llm_from_scratch.core.training import Trainer
+
+
+# Training data
+
+training_data = [
+    ([-3.0], [0.0]),
+    ([-2.0], [0.0]),
+    ([-1.0], [0.0]),
+    ([0.0], [0.0]),
+    ([1.0], [2.0]),
+    ([2.0], [4.0]),
+    ([3.0], [6.0]),
+]
+
+
+neuron = Neuron(
+    weights=[0.5],
+    bias=1.0,
+    activation=Activation(),
+)
+
+layer = Layer([neuron])
+
+network = Network([
+    layer,
+])
+
+loss_function = MeanSquaredError()
+
+optimizer = GradientDescent(
+    learning_rate=0.01,
+)
+
+trainer = Trainer(
+    network=network,
+    loss_function=loss_function,
+    optimizer=optimizer,
+)
+
+
+epochs = 1000
+
+print("Starting training...")
+print(
+    "Initial weight:",
+    f"{neuron.weights[0]:.6f}",
+)
+print(
+    "Initial bias:",
+    f"{neuron.bias:.6f}",
+)
+print()
+
+
+for epoch in range(epochs):
+    total_loss = 0.0
+
+    for input_values, targets in training_data:
+        total_loss += trainer.train_step(
+            input_values=input_values,
+            targets=targets,
+        )
+
+    average_loss = total_loss / len(training_data)
+
+    if (epoch + 1) % 100 == 0:
+        print(
+            f"Epoch {epoch + 1:4d} | "
+            f"Loss: {average_loss:.6f} | "
+            f"Weight: {neuron.weights[0]:.6f} | "
+            f"Bias: {neuron.bias:.6f}"
+        )
+
+
+print()
+print("Training complete.")
+print(f"Final weight: {neuron.weights[0]:.6f}")
+print(f"Final bias:   {neuron.bias:.6f}")
+print()
+
+print("Predictions:")
+
+for input_values, targets in training_data:
+    predictions = network.forward(input_values)
+
+    print(
+        f"Input: {input_values[0]:5.1f} | "
+        f"Target: {targets[0]:5.1f} | "
+        f"Prediction: {predictions[0]:8.4f}"
+    )

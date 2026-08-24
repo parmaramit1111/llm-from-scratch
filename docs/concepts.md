@@ -1,14 +1,17 @@
-# LLM From Scratch — Concepts
+# LLM From Scratch --- Concepts
 
-This document is a living reference for the core concepts used throughout the project.
+This document is a living reference for the core concepts used
+throughout the project.
 
-The goal is to understand **what each concept means, why it exists, and how it contributes to an LLM**.
+The goal is to understand **what each concept means, why it exists, and
+how it contributes to an LLM**.
 
 ---
 
 # 1. Machine Learning
 
-Machine learning is the process of allowing a system to learn patterns from examples rather than explicitly programming every rule.
+Machine learning is the process of allowing a system to learn patterns
+from examples rather than explicitly programming every rule.
 
 Traditional programming:
 
@@ -28,13 +31,15 @@ Input + Expected Output
      New Prediction
 ```
 
-In this project, the model will start with random parameters and learn them through training.
+In this project, the model will start with random parameters and learn
+them through training.
 
 ---
 
 # 2. Model
 
-A model is a mathematical function with parameters that can be adjusted during training.
+A model is a mathematical function with parameters that can be adjusted
+during training.
 
 Conceptually:
 
@@ -125,7 +130,8 @@ During training, weights are adjusted to reduce prediction error.
 
 # 5. Bias
 
-A bias is an additional learned value that allows a model to shift its output.
+A bias is an additional learned value that allows a model to shift its
+output.
 
 Example:
 
@@ -145,7 +151,8 @@ y = 3x + 2
 
 # 6. Neuron
 
-A neuron is a small mathematical unit that combines inputs, weights, and a bias.
+A neuron is a small mathematical unit that combines inputs, weights, and
+a bias.
 
 Conceptually:
 
@@ -169,13 +176,15 @@ A simple neuron:
 z = w × x + b
 ```
 
-The neuron is one of the fundamental building blocks of a neural network.
+The neuron is one of the fundamental building blocks of a neural
+network.
 
 ---
 
 # 7. Forward Pass
 
-The forward pass is the process of sending input through the model to produce a prediction.
+The forward pass is the process of sending input through the model to
+produce a prediction.
 
 ```text
 Input
@@ -217,7 +226,8 @@ Expected: 6
 Predicted: 5.5
 ```
 
-The difference between the prediction and expected result is used to calculate the loss.
+The difference between the prediction and expected result is used to
+calculate the loss.
 
 ---
 
@@ -244,13 +254,15 @@ Predicted = 5.5
 
 The loss function converts this error into a numerical value.
 
-Lower loss generally means the model is performing better on the training examples.
+Lower loss generally means the model is performing better on the
+training examples.
 
 ---
 
 # 10. Mean Squared Error
 
-Mean Squared Error (MSE) is a simple loss function useful for our first experiments.
+Mean Squared Error (MSE) is a simple loss function useful for our first
+experiments.
 
 For one example:
 
@@ -264,15 +276,18 @@ For multiple examples:
 MSE = average((prediction - target)²)
 ```
 
-We will use MSE initially because it makes the mathematics easy to understand.
+We will use MSE initially because it makes the mathematics easy to
+understand.
 
-Later, language models will use different loss functions, typically based on cross-entropy.
+Later, language models will use different loss functions, typically
+based on cross-entropy.
 
 ---
 
 # 11. Derivative
 
-A derivative tells us how much a value changes when another value changes.
+A derivative tells us how much a value changes when another value
+changes.
 
 For machine learning, derivatives help answer:
 
@@ -297,7 +312,8 @@ Derivatives are fundamental to backpropagation.
 
 # 12. Gradient
 
-A gradient is a collection of derivatives describing how the loss changes with respect to model parameters.
+A gradient is a collection of derivatives describing how the loss
+changes with respect to model parameters.
 
 For example:
 
@@ -316,7 +332,8 @@ The gradient tells the optimizer how the parameters should change.
 
 # 13. Backpropagation
 
-Backpropagation calculates how much each model parameter contributed to the final error.
+Backpropagation calculates how much each model parameter contributed to
+the final error.
 
 The general process is:
 
@@ -334,7 +351,8 @@ Gradients
 
 The gradients are then used to update the model parameters.
 
-Backpropagation is one of the most important concepts we will implement ourselves.
+Backpropagation is one of the most important concepts we will implement
+ourselves.
 
 ---
 
@@ -401,7 +419,8 @@ The correct value depends on the model and training problem.
 
 # 16. Training
 
-Training is the process of repeatedly showing examples to the model and updating its parameters.
+Training is the process of repeatedly showing examples to the model and
+updating its parameters.
 
 Basic workflow:
 
@@ -493,7 +512,8 @@ Batch
 [Example 1, Example 2, Example 3, ...]
 ```
 
-Batches become particularly important when training large models on GPUs.
+Batches become particularly important when training large models on
+GPUs.
 
 ---
 
@@ -501,7 +521,8 @@ Batches become particularly important when training large models on GPUs.
 
 An activation function introduces non-linearity into a neural network.
 
-Without non-linear activation functions, stacking many linear layers would still behave essentially like one linear transformation.
+Without non-linear activation functions, stacking many linear layers
+would still behave essentially like one linear transformation.
 
 Common activation functions:
 
@@ -518,7 +539,8 @@ We will initially implement ReLU.
 
 # 21. Neural Network
 
-A neural network is a collection of interconnected neurons organized into layers.
+A neural network is a collection of interconnected neurons organized
+into layers.
 
 Example:
 
@@ -570,7 +592,8 @@ Higher-dimensional tensor
 
 Modern deep-learning frameworks represent most model data using tensors.
 
-Initially, we will use normal Python data structures to understand the mathematics.
+Initially, we will use normal Python data structures to understand the
+mathematics.
 
 Later we will introduce NumPy and PyTorch tensors.
 
@@ -578,7 +601,8 @@ Later we will introduce NumPy and PyTorch tensors.
 
 # 23. Matrix Multiplication
 
-Matrix multiplication is one of the most important operations in neural networks.
+Matrix multiplication is one of the most important operations in neural
+networks.
 
 Conceptually:
 
@@ -616,7 +640,8 @@ Example:
 "learning"
 ```
 
-might be represented as one token or several smaller tokens depending on the tokenizer.
+might be represented as one token or several smaller tokens depending on
+the tokenizer.
 
 ---
 
@@ -689,13 +714,15 @@ Example:
 
 The embedding values are learned during training.
 
-Embeddings allow the model to represent relationships between tokens numerically.
+Embeddings allow the model to represent relationships between tokens
+numerically.
 
 ---
 
 # 28. Positional Information
 
-Transformers process tokens in parallel, so they need a way to represent token position.
+Transformers process tokens in parallel, so they need a way to represent
+token position.
 
 For example:
 
@@ -709,13 +736,15 @@ has a different meaning/order from:
 The cat chased the dog
 ```
 
-The model therefore needs positional information in addition to token embeddings.
+The model therefore needs positional information in addition to token
+embeddings.
 
 ---
 
 # 29. Attention
 
-Attention allows a model to determine which parts of the input are important when processing a particular token.
+Attention allows a model to determine which parts of the input are
+important when processing a particular token.
 
 Conceptually:
 
@@ -735,7 +764,8 @@ For example:
 The pharmacy filled the prescription because it had the drug.
 ```
 
-Attention helps the model determine what words are relevant to understanding "it".
+Attention helps the model determine what words are relevant to
+understanding "it".
 
 ---
 
@@ -761,13 +791,15 @@ Weighted Values
 Context
 ```
 
-This mechanism allows each token to gather information from other tokens.
+This mechanism allows each token to gather information from other
+tokens.
 
 ---
 
 # 31. Self-Attention
 
-Self-attention means tokens attend to other tokens within the same sequence.
+Self-attention means tokens attend to other tokens within the same
+sequence.
 
 Conceptually:
 
@@ -784,7 +816,8 @@ The result is a context-aware representation of the sequence.
 
 # 32. Multi-Head Attention
 
-Instead of performing one attention calculation, a Transformer can perform several attention operations in parallel.
+Instead of performing one attention calculation, a Transformer can
+perform several attention operations in parallel.
 
 ```text
 Input
@@ -803,7 +836,8 @@ Different heads can learn different relationships.
 
 # 33. Transformer
 
-A Transformer is a neural-network architecture built around attention mechanisms.
+A Transformer is a neural-network architecture built around attention
+mechanisms.
 
 A simplified Transformer block contains:
 
@@ -831,7 +865,8 @@ Transformers are the core architecture behind most modern LLMs.
 
 # 34. Logits
 
-Logits are the raw numerical outputs produced by the final model layer before converting them into probabilities.
+Logits are the raw numerical outputs produced by the final model layer
+before converting them into probabilities.
 
 Example:
 
@@ -881,7 +916,8 @@ The model can then select or sample the next token.
 
 # 36. Next-Token Prediction
 
-A language model learns to predict the next token based on previous tokens.
+A language model learns to predict the next token based on previous
+tokens.
 
 Example:
 
@@ -911,13 +947,15 @@ Loss
 Backpropagation
 ```
 
-This simple objective is the foundation of autoregressive language models.
+This simple objective is the foundation of autoregressive language
+models.
 
 ---
 
 # 37. Language Model
 
-A language model estimates the probability of tokens given previous context.
+A language model estimates the probability of tokens given previous
+context.
 
 Conceptually:
 
@@ -964,9 +1002,11 @@ Model D
 1,000,000,000 parameters
 ```
 
-More parameters generally provide greater capacity, but parameter count alone does not determine model quality.
+More parameters generally provide greater capacity, but parameter count
+alone does not determine model quality.
 
-Training data, architecture, optimization, and training quality also matter.
+Training data, architecture, optimization, and training quality also
+matter.
 
 ---
 
@@ -1020,7 +1060,8 @@ Parameter updates
 
 ### Fine-Tuning
 
-Start with an existing pretrained model and continue training it on a specialized dataset.
+Start with an existing pretrained model and continue training it on a
+specialized dataset.
 
 ```text
 Pretrained Model
@@ -1032,7 +1073,8 @@ Fine-Tuned Model
 
 ### Retrieval-Augmented Generation (RAG)
 
-Keep knowledge outside the model and retrieve relevant information at runtime.
+Keep knowledge outside the model and retrieve relevant information at
+runtime.
 
 ```text
 Question
@@ -1044,7 +1086,8 @@ Model
 Answer
 ```
 
-For many real-world applications, RAG is preferable to retraining the model.
+For many real-world applications, RAG is preferable to retraining the
+model.
 
 ---
 
@@ -1179,7 +1222,8 @@ That is the core journey of this project.
 
 ## Status
 
-Concepts will be expanded as the corresponding implementations are developed.
+Concepts will be expanded as the corresponding implementations are
+developed.
 
 Current focus:
 
@@ -1196,3 +1240,36 @@ Backpropagation
   ↓
 Gradient Descent
 ```
+
+---
+
+# Current Milestone
+
+The project has progressed from foundational neural-network concepts to
+the language-model foundation:
+
+```text
+Neuron
+  ↓
+Layer
+  ↓
+Network
+  ↓
+Backpropagation
+  ↓
+Training
+  ↓
+Character Prediction
+  ↓
+Context
+  ↓
+Embedding
+  ↓
+Self-Attention
+```
+
+The next implementation focus is **Self-Attention**, followed by
+multi-head attention and the Transformer architecture.
+
+> **The goal is not just to make the code work. The goal is to understand
+> why every abstraction exists and what problem it solves.**
